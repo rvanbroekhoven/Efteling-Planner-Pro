@@ -11,7 +11,7 @@ body {
     font-family: 'Nunito', -apple-system, sans-serif;
     background-color: var(--efteling-bg);
     color: #333;
-    padding-bottom: 120px;
+    padding-bottom: 220px; 
     font-size: 15px;
     -webkit-tap-highlight-color: transparent;
 }
@@ -43,10 +43,9 @@ h1, h2, h3, .top-attraction-name {
 .divider { width: 85%; text-align: center; border-bottom: 1px solid #ddd; line-height: 0.1em; margin: 30px auto 25px auto; }
 .divider span { background: var(--efteling-bg); padding: 0 15px; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; }
 
-/* Kaarten: Breder en minder hoog gemaakt */
 .card {
     background: white; 
-    margin: 8px 10px; /* Marges verkleind voor meer breedte */
+    margin: 8px 10px; 
     border-radius: 16px;
     display: flex; 
     box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
@@ -56,21 +55,32 @@ h1, h2, h3, .top-attraction-name {
 
 .card.onderhoud { filter: grayscale(100%); opacity: 0.55; }
 
-/* VILLA VOLTA: Alleen de interne elementen draaien, de box en layout blijven intact! */
+/* VILLA VOLTA FIX: Zorgt dat de tekst links blijft staan en de badge rechts! */
 .upside-down .card-img,
-.upside-down h3,
-.upside-down p,
 .upside-down .wait-badge,
 .upside-down .star {
     transform: rotate(180deg);
     transform-origin: center center;
 }
 
+.upside-down h3 {
+    transform: rotate(180deg);
+    transform-origin: center center;
+    align-self: flex-start; /* Fix voor de tekstverschuiving */
+}
+
+.upside-down p {
+    transform: rotate(180deg);
+    transform-origin: center center;
+    align-self: flex-start; /* Fix voor de tekstverschuiving */
+    margin: 0 0 2px 0; /* Draait de visuele marges om */
+}
+
 .card-img { 
-    width: 80px; /* Verkleind voor lagere kaart */
+    width: 80px; 
     flex-shrink: 0; 
     align-self: stretch; 
-    min-height: 80px; /* Verkleind voor lagere kaart */
+    min-height: 80px; 
     border-radius: 16px 0 0 16px; 
     background-color: #e0e0e0;
     background-size: cover; 
@@ -79,7 +89,7 @@ h1, h2, h3, .top-attraction-name {
 }
 
 .card-content { 
-    padding: 8px 12px; /* Padding verkleind voor lagere kaart */
+    padding: 8px 12px; 
     flex: 1; 
     display: flex; 
     flex-direction: column; 
@@ -118,8 +128,17 @@ h1, h2, h3, .top-attraction-name {
 .nav-item.active { color: var(--efteling-gold); }
 .nav-icon { display: block; font-size: 22px; margin-bottom: 4px; }
 
-.sticky-footer { position: fixed; bottom: 110px; width: 100%; display: flex; justify-content: center; z-index: 99; pointer-events: none; }
+.sticky-footer { 
+    position: fixed; 
+    bottom: 135px; 
+    width: 100%; 
+    display: flex; 
+    justify-content: center; 
+    z-index: 99; 
+    pointer-events: none; 
+}
 .plan-btn { background: var(--efteling-gold); color: white; border: none; padding: 16px 40px; border-radius: 40px; font-weight: 800; font-size: 16px; font-family: 'Nunito', sans-serif; box-shadow: 0 8px 25px rgba(175, 148, 79, 0.4); pointer-events: auto;}
+
 .action-footer { text-align: center; margin-top: 20px; }
 .secondary-btn { background: white; border: 1.5px solid var(--efteling-gold); color: var(--efteling-gold); padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 800; margin: 5px; font-family: 'Nunito', sans-serif;}
 

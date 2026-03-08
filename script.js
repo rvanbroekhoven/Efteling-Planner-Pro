@@ -2,25 +2,25 @@ const API_URL = "https://api.allorigins.win/raw?url=https://queue-times.com/park
 const WEATHER_API = "https://api.open-meteo.com/v1/forecast?latitude=51.65&longitude=5.05&current_weather=true";
 
 let attractieData = [
-    { id: 1, name: "Joris en de Draak", wait: 20, status: "Open", rijk: "Ruigrijk", img: "joris-en-de-draak.png" },
-    { id: 2, name: "Symbolica", wait: 15, status: "Open", rijk: "Fantasierijk", img: "symbolica.png" },
-    { id: 3, name: "Droomvlucht", wait: 15, status: "Open", rijk: "Marerijk", img: "droomvlucht.png" },
-    { id: 4, name: "Danse Macabre", wait: 13, status: "Open", rijk: "Anderrijk", img: "danse-macabre.png" },
-    { id: 5, name: "Python", wait: 10, status: "Open", rijk: "Ruigrijk", img: "python.png" },
-    { id: 6, name: "Vogel Rok", wait: 15, status: "Open", rijk: "Reizenrijk", img: "vogel-rok.png" },
+    { id: 1, name: "Joris en de Draak", wait: 0, status: "Open", rijk: "Ruigrijk", img: "joris-en-de-draak.png" },
+    { id: 2, name: "Symbolica", wait: 0, status: "Open", rijk: "Fantasierijk", img: "symbolica.png" },
+    { id: 3, name: "Droomvlucht", wait: 0, status: "Open", rijk: "Marerijk", img: "droomvlucht.png" },
+    { id: 4, name: "Danse Macabre", wait: 0, status: "Open", rijk: "Anderrijk", img: "danse-macabre.png" },
+    { id: 5, name: "Python", wait: 0, status: "Open", rijk: "Ruigrijk", img: "python.png" },
+    { id: 6, name: "Vogel Rok", wait: 0, status: "Open", rijk: "Reizenrijk", img: "vogel-rok.png" },
     { id: 7, name: "Baron 1898", wait: 0, status: "Onderhoud", rijk: "Ruigrijk", img: "baron-1898.png" },
     { id: 8, name: "De Vliegende Hollander", wait: 0, status: "Onderhoud", rijk: "Ruigrijk", img: "de-vliegende-hollander.png" },
-    { id: 9, name: "Sprookjesbos", wait: 5, status: "Open", rijk: "Marerijk", img: "sprookjesbos.png" },
-    { id: 10, name: "Carnaval Festival", wait: 5, status: "Open", rijk: "Reizenrijk", img: "carnaval-festival.png" },
-    { id: 11, name: "Monorail", wait: 5, status: "Open", rijk: "Reizenrijk", img: "monorail.png" },
-    { id: 12, name: "Fata Morgana", wait: 10, status: "Open", rijk: "Anderrijk", img: "fata-morgana.png" },
-    { id: 13, name: "Gondoletta", wait: 5, status: "Open", rijk: "Reizenrijk", img: "gondoletta.png" },
-    { id: 14, name: "Halve Maen", wait: 5, status: "Open", rijk: "Ruigrijk", img: "halve-maen.png" },
-    { id: 15, name: "Max & Moritz", wait: 15, status: "Open", rijk: "Anderrijk", img: "max-en-moritz.png" },
-    { id: 16, name: "Pagode", wait: 5, status: "Open", rijk: "Reizenrijk", img: "pagode.png" },
+    { id: 9, name: "Sprookjesbos", wait: 0, status: "Open", rijk: "Marerijk", img: "sprookjesbos.png" },
+    { id: 10, name: "Carnaval Festival", wait: 0, status: "Open", rijk: "Reizenrijk", img: "carnaval-festival.png" },
+    { id: 11, name: "Monorail", wait: 0, status: "Open", rijk: "Reizenrijk", img: "monorail.png" },
+    { id: 12, name: "Fata Morgana", wait: 0, status: "Open", rijk: "Anderrijk", img: "fata-morgana.png" },
+    { id: 13, name: "Gondoletta", wait: 0, status: "Open", rijk: "Reizenrijk", img: "gondoletta.png" },
+    { id: 14, name: "Halve Maen", wait: 0, status: "Open", rijk: "Ruigrijk", img: "halve-maen.png" },
+    { id: 15, name: "Max & Moritz", wait: 0, status: "Open", rijk: "Anderrijk", img: "max-en-moritz.png" },
+    { id: 16, name: "Pagode", wait: 0, status: "Open", rijk: "Reizenrijk", img: "pagode.png" },
     { id: 17, name: "Piraña", wait: 0, status: "Onderhoud", rijk: "Anderrijk", img: "pirana.png" },
-    { id: 18, name: "Stoomcarrousel", wait: 5, status: "Open", rijk: "Marerijk", img: "stoomcarrousel.png" },
-    { id: 19, name: "Villa Volta", wait: 10, status: "Open", rijk: "Marerijk", img: "villa-volta.png" }
+    { id: 18, name: "Stoomcarrousel", wait: 0, status: "Open", rijk: "Marerijk", img: "stoomcarrousel.png" },
+    { id: 19, name: "Villa Volta", wait: 0, status: "Open", rijk: "Marerijk", img: "villa-volta.png" }
 ];
 
 const sprookjesRoute = [
@@ -80,7 +80,12 @@ async function updateWachttijden() {
         if (data && data.lands) {
             data.lands.forEach(land => {
                 land.rides.forEach(ride => {
-                    let match = attractieData.find(a => ride.name.includes(a.name) || a.name.includes(ride.name));
+                    let apiName = ride.name.toLowerCase().trim();
+                    let match = attractieData.find(a => {
+                        let localName = a.name.toLowerCase().trim();
+                        return apiName.includes(localName) || localName.includes(apiName);
+                    });
+
                     if (match) {
                         match.wait = ride.wait_time;
                         match.status = ride.is_open ? "Open" : "Gesloten";
@@ -108,7 +113,6 @@ function toonLijst() {
         const isGedaan = voltooid.has(item.id);
         const isDicht = item.status === "Gesloten" || item.status === "Onderhoud";
         
-        // VILLA VOLTA: Zet de speciale class aan
         const isVillaVolta = item.id === 19 ? "upside-down" : "";
         
         let sterren = "";
