@@ -1,6 +1,13 @@
 const API_URL = "https://api.allorigins.win/raw?url=https://queue-times.com/parks/160/queue_times.json";
 const WEATHER_API = "https://api.open-meteo.com/v1/forecast?latitude=51.65&longitude=5.05&current_weather=true";
 
+// Realistische basiswachttijden voor de simulatie
+const basisWachttijden = {
+    1: 35, 2: 45, 3: 40, 4: 50, 5: 30, 6: 25, 7: 45, 8: 40, 
+    9: 0, 10: 20, 11: 10, 12: 25, 13: 15, 14: 10, 15: 30, 
+    16: 10, 17: 30, 18: 5, 19: 20
+};
+
 let attractieData = [
     { id: 1, name: "Joris en de Draak", wait: 0, status: "Open", rijk: "Ruigrijk", img: "joris-en-de-draak.png" },
     { id: 2, name: "Symbolica", wait: 0, status: "Open", rijk: "Fantasierijk", img: "symbolica.png" },
@@ -47,7 +54,7 @@ function save() {
 async function updateWeather() {
     try {
         const response = await fetch(WEATHER_API);
-        if (!response.ok) throw new Error("Weer data niet bereikbaar");
+        if (!response.ok) throw new Error("Weer data fail");
         const data = await response.json();
         
         const temp = Math.round(data.current_weather.temperature);
@@ -55,13 +62,13 @@ async function updateWeather() {
         
         let emoji = "☁️";
         if (code === 0) emoji = "☀️"; 
-        else if (code === 1 || code === 2) emoji = "⛅"; 
+        else if (code <= 2) emoji = "⛅"; 
         else if (code === 3) emoji = "☁️"; 
-        else if (code >= 45 && code <= 48) emoji = "🌫️"; 
-        else if (code >= 51 && code <= 67) emoji = "🌧️"; 
-        else if (code >= 71 && code <= 77) emoji = "🌨️"; 
-        else if (code >= 80 && code <= 82) emoji = "🌦️"; 
-        else if (code >= 95) emoji = "⛈️"; 
+        else if (code <= 48) emoji = "🌫️"; 
+        else if (code <= 67) emoji = "🌧️"; 
+        else if (code <= 77) emoji = "🌨️"; 
+        else if (code <= 82) emoji = "🌦️"; 
+        else emoji = "⛈️"; 
 
         document.getElementById('weather-info').innerText = `${emoji} ${temp}°C`;
     } catch (e) {
@@ -69,9 +76,40 @@ async function updateWeather() {
     }
 }
 
-// 🎢 LIVE WACHTTIJDEN
+// 🧠 SLIMME SIMULATIE (Voor het geval we OFFLINE zijn)
+function genereerSimulatieTijden() {
+    const nu = new Date();
+    const uur = nu.getHours();
+    const dag = nu.getDay(); // 0 = Zondag, 6 = Zaterdag
+
+    let drukteFactor = 1.0;
+    if (dag === 0 || dag === 6) drukteFactor += 0.3; // Weekend is drukker
+    if (uur < 10 || uur >= 18) drukteFactor *= 0.6; // Ochtend/avond rustiger
+    else if (uur >= 12 && uur <= 15) drukteFactor *= 1.3; // Piekuren
+
+    attractieData.forEach(a => {
+        if (a.status !== "Onderhoud" && a.id !== 9) { // 9 is Sprookjesbos
+            let base = basisWachttijden[a.id] || 20;
+            let random = Math.floor(Math.random() * 11) - 5; // Variatie van -5 tot +5
+            let gesimuleerd = Math.max(5, Math.round((base * drukteFactor) + random));
+            
+            // Afronden op 5-tallen voor een realistische weergave
+            a.wait = Math.round(gesimuleerd / 5) * 5; 
+            a.status = "Open";
+        }
+    });
+}
+
+// 🎢 LIVE WACHTTIJDEN MET FALLBACK
 async function updateWachttijden() {
-    document.getElementById('last-update').innerText = "VERVERSEN...";
+    const indicator = document.getElementById('last-update');
+    indicator.innerText = "VERVERSEN...";
+    indicator.classList.remove("offline");
+
+    // 1. Genereer altijd éérst een perfecte simulatie
+    genereerSimulatieTijden();
+
+    // 2. Probeer daarna de echte data op te halen en te overschrijven
     try {
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error("Netwerkfout");
@@ -80,22 +118,25 @@ async function updateWachttijden() {
         if (data && data.lands) {
             data.lands.forEach(land => {
                 land.rides.forEach(ride => {
-                    let apiName = ride.name.toLowerCase().trim();
+                    // Robuuste check: converteer alles naar kleine letters zonder spaties
+                    let apiName = ride.name.toLowerCase().replace(/[^a-z0-9]/g, '');
                     let match = attractieData.find(a => {
-                        let localName = a.name.toLowerCase().trim();
+                        let localName = a.name.toLowerCase().replace(/[^a-z0-9]/g, '');
                         return apiName.includes(localName) || localName.includes(apiName);
                     });
 
-                    if (match) {
+                    if (match && match.id !== 9) { // We overschrijven Sprookjesbos niet
                         match.wait = ride.wait_time;
                         match.status = ride.is_open ? "Open" : "Gesloten";
                     }
                 });
             });
-            document.getElementById('last-update').innerText = "● LIVE " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            indicator.innerText = "● LIVE " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
     } catch (e) {
-        document.getElementById('last-update').innerText = "OFFLINE";
+        // Mislukt? Dan gebruiken we naadloos de simulatie data!
+        indicator.innerText = "● OFFLINE SIM";
+        indicator.classList.add("offline");
     } finally {
         toonLijst();
         if (activeView === 'plan') berekenOptimalePlan(false);
@@ -112,7 +153,7 @@ function toonLijst() {
         const p = prioriteiten[item.id] || 0;
         const isGedaan = voltooid.has(item.id);
         const isDicht = item.status === "Gesloten" || item.status === "Onderhoud";
-        
+        const isSprookjesbos = item.id === 9;
         const isVillaVolta = item.id === 19 ? "upside-down" : "";
         
         let sterren = "";
@@ -120,13 +161,17 @@ function toonLijst() {
             sterren += `<span class="star ${i<=p?'active':''}" onclick="${isDicht ? '' : `setPriority(${item.id},${i})`}">★</span>`;
         }
         
+        // Verberg de wachttijd badge bij het Sprookjesbos
+        let waitDisplay = isSprookjesbos ? "display: none;" : (isDicht ? "background:#555;" : "");
+        let waitText = !isDicht ? item.wait + ' min' : 'DICHT';
+
         container.innerHTML += `
             <div class="card ${isDicht ? 'onderhoud' : ''} ${isVillaVolta}" style="${isGedaan?'opacity:0.5':''}">
                 <div class="card-img" style="background-image: url('${item.img}');"></div>
                 <div class="card-content">
-                    <span class="wait-badge" style="${isDicht ? 'background:#555;' : ''}">${!isDicht ? item.wait + ' min' : 'DICHT'}</span>
+                    <span class="wait-badge" style="${waitDisplay}">${waitText}</span>
                     <h3>${item.name}</h3>
-                    <p>${item.rijk}</p>
+                    <p class="rijk-tekst">${item.rijk}</p>
                     <div class="star-rating">${sterren}</div>
                 </div>
             </div>`;
@@ -173,21 +218,28 @@ function berekenOptimalePlan(switchAfter = true) {
     if(lijst.length > 0) {
         lijst.sort((a,b) => (prioriteiten[b.id]*40 - b.wait) - (prioriteiten[a.id]*40 - a.wait));
         const top = lijst[0];
+        
+        let wachttijdHtml = top.id === 9 ? `<div style="font-size:20px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">Wandeling</div>` : `<div style="font-size:28px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">${top.wait} MIN</div>`;
+
         document.getElementById('next-step-container').innerHTML = `
             <div class="plan-header-card">
                 <span class="badge">NU DOEN</span>
                 <div class="top-attraction-name">${top.name}</div>
-                <div style="font-size:28px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">${top.wait} MIN</div>
+                ${wachttijdHtml}
                 <p style="font-size:13px; font-weight:700; color:#888; margin-bottom:15px;">Locatie: ${top.rijk}</p>
                 <button onclick="markAsDone(${top.id})" class="done-btn">✓ Bezocht</button>
             </div>`;
-        document.getElementById('route-container').innerHTML = lijst.slice(1).map(a => `
+            
+        document.getElementById('route-container').innerHTML = lijst.slice(1).map(a => {
+            let verwachtTekst = a.id === 9 ? "Wandeling" : `Verwachte wachttijd: ${a.wait} min`;
+            return `
             <div class="card" style="margin: 8px 15px; opacity:0.85; transform:scale(0.96)">
                 <div class="card-content">
                     <h3>${a.name}</h3>
-                    <p style="margin:5px 0 0 0; color: #666; font-size: 13px; font-weight:700;">Verwachte wachttijd: ${a.wait} min</p>
+                    <p style="margin:5px 0 0 0; color: #666; font-size: 13px; font-weight:700;">${verwachtTekst}</p>
                 </div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     } else {
         document.getElementById('next-step-container').innerHTML = `<div class="plan-header-card"><div class="top-attraction-name">Alles bezocht! 🏰</div><p style="font-weight:700; color:#888;">Tijd voor een snack.</p></div>`;
         document.getElementById('route-container').innerHTML = "";
@@ -218,9 +270,8 @@ function toonSprookjes() {
 function resetData() { if(confirm("Weet je het zeker? Alles wordt gewist.")) { localStorage.clear(); location.reload(); } }
 
 window.onload = () => {
-    toonLijst(); 
     updateWeather(); 
-    updateWachttijden(); 
+    updateWachttijden(); // Dit zorgt nu ook direct voor de simulatie
     setInterval(updateWachttijden, 60000); 
     setInterval(updateWeather, 1800000); 
     switchView(activeView);

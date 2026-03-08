@@ -4,6 +4,7 @@
     --efteling-bg: #F7F3E9;
     --white: #ffffff;
     --live-red: #ff3b30;
+    --live-gray: #8e8e93;
 }
 
 body {
@@ -37,6 +38,8 @@ h1, h2, h3, .top-attraction-name {
     color: var(--live-red); white-space: nowrap; overflow: hidden;
 }
 
+.live-indicator.offline { color: var(--live-gray); }
+
 .view-intro { padding: 25px 30px 10px; text-align: center; }
 .view-intro p { margin: 0; font-size: 16px; color: #555; line-height: 1.4; font-weight: 600;}
 
@@ -55,7 +58,7 @@ h1, h2, h3, .top-attraction-name {
 
 .card.onderhoud { filter: grayscale(100%); opacity: 0.55; }
 
-/* VILLA VOLTA FIX: Zorgt dat de tekst links blijft staan en de badge rechts! */
+/* VILLA VOLTA FIX */
 .upside-down .card-img,
 .upside-down .wait-badge,
 .upside-down .star {
@@ -63,21 +66,17 @@ h1, h2, h3, .top-attraction-name {
     transform-origin: center center;
 }
 
-.upside-down h3 {
+.upside-down h3, .upside-down p.rijk-tekst {
     transform: rotate(180deg);
     transform-origin: center center;
-    align-self: flex-start; /* Fix voor de tekstverschuiving */
+    align-self: flex-start; 
 }
 
-.upside-down p {
-    transform: rotate(180deg);
-    transform-origin: center center;
-    align-self: flex-start; /* Fix voor de tekstverschuiving */
-    margin: 0 0 2px 0; /* Draait de visuele marges om */
-}
+.upside-down p.rijk-tekst { margin: 0 0 2px 0; }
 
+/* Image is nu breder (110px) */
 .card-img { 
-    width: 80px; 
+    width: 110px; 
     flex-shrink: 0; 
     align-self: stretch; 
     min-height: 80px; 
@@ -97,7 +96,7 @@ h1, h2, h3, .top-attraction-name {
 }
 
 .card-content h3 { margin: 0; font-size: 17px; color: var(--efteling-blue); }
-.card-content p { margin: 2px 0 0 0; font-size: 11px; color: #666; font-weight: 700;}
+.card-content p.rijk-tekst { margin: 2px 0 0 0; font-size: 11px; color: #666; font-weight: 700;}
 
 .wait-badge { 
     position: absolute; top: 10px; right: 10px; 
@@ -110,6 +109,7 @@ h1, h2, h3, .top-attraction-name {
 .star:active { transform: scale(1.2); }
 .star.active { color: var(--efteling-gold); }
 
+/* Dagplan */
 .plan-header-card {
     background: white; width: 80%; padding: 35px 25px; border-radius: 25px;
     text-align: center; border: 2px solid var(--efteling-gold);
@@ -128,9 +128,10 @@ h1, h2, h3, .top-attraction-name {
 .nav-item.active { color: var(--efteling-gold); }
 .nav-icon { display: block; font-size: 22px; margin-bottom: 4px; }
 
+/* FIX VOOR OVERLAP: Knop op de sweet-spot van 120px gezet */
 .sticky-footer { 
     position: fixed; 
-    bottom: 135px; 
+    bottom: 120px; 
     width: 100%; 
     display: flex; 
     justify-content: center; 
