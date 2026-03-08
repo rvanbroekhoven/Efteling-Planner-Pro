@@ -58,7 +58,6 @@ function save() {
     localStorage.setItem('eftelingSprookjes', JSON.stringify(selectedSprookjes));
 }
 
-// 🌤️ LIVE WEER
 async function updateWeather() {
     try {
         const response = await fetch(WEATHER_API);
@@ -71,7 +70,6 @@ async function updateWeather() {
     } catch (e) { document.getElementById('weather-info').innerText = "⛅ --°C"; }
 }
 
-// 🧠 SIMULATIE
 function genereerSimulatieTijden() {
     const nu = new Date(), uur = nu.getHours(), dag = nu.getDay();
     let factor = 1.0;
@@ -87,11 +85,10 @@ function genereerSimulatieTijden() {
     });
 }
 
-// 🎢 WACHTTIJDEN
 async function updateWachttijden() {
     const ind = document.getElementById('last-update');
     ind.innerText = "VERVERSEN..."; ind.classList.remove("offline");
-    genereerSimulatieTijden(); // Fallback klaarzetten
+    genereerSimulatieTijden();
     try {
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error("Netwerkfout");
@@ -151,7 +148,6 @@ function switchView(v) {
     window.scrollTo(0,0);
 }
 
-// 🧠 HET NIEUWE, SLIMME ALGORITME
 function getVerwachteWachtVoorTijd(attractie, uur) {
     let base = basisWachttijden[attractie.id] || 20;
     let factor = 1.0;
@@ -168,34 +164,45 @@ function berekenOptimalePlan(switchAfter = true) {
     if(lijst.length > 0) {
         let nuUur = new Date().getHours();
         
-        // Zoek uit waar we nu zijn (het Rijk van de laatst bezochte attractie)
+        // Zodra je de app opent of niks hebt voltooid, sta je bij de Ingang
         let lastVoltooidId = Array.from(voltooid).pop();
-        let huidigRijk = lastVoltooidId ? attractieData.find(a => a.id === lastVoltooidId)?.rijk : null;
+        let huidigRijk = lastVoltooidId ? attractieData.find(a => a.id === lastVoltooidId)?.rijk : "Ingang";
 
-        // BEREKEN DE SLIMME SCORE
         lijst.forEach(a => {
-            let score = prioriteiten[a.id] * 20; // 1. Prioriteit is de basis
+            let score = prioriteiten[a.id] * 20; 
             let verwacht = getVerwachteWachtVoorTijd(a, nuUur);
-            
-            // 2. Wachtrij-dip check: Is de rij nu korter dan normaal?
             let wachtVerschil = verwacht - a.wait; 
+            
             score += (wachtVerschil * 1.5); 
-            score -= (a.wait * 0.5); // Straffactor voor domweg lange rijen
-
-            // 3. Looproute check (Anti-ping-pong)
+            score -= (a.wait * 0.5); 
             a.waarom = "";
-            if (huidigRijk === a.rijk && a.id !== 9) { 
-                score += 40; 
-                a.waarom = "💡 Dichtbij je huidige locatie!";
-            } else if (wachtVerschil > 15) {
-                a.waarom = "💡 Nu veel rustiger dan normaal!";
-            } else if (prioriteiten[a.id] === 5) {
-                a.waarom = "💡 Jouw absolute top-prioriteit!";
+
+            if (huidigRijk === "Ingang") {
+                // Vanaf de ingang ben je sneller bij het Fantasierijk of Anderrijk
+                if (a.rijk === "Fantasierijk" || a.rijk === "Anderrijk") { 
+                    score += 30; 
+                    a.waarom = "💡 Dichtbij de ingang!";
+                } else if (wachtVerschil > 15) {
+                    a.waarom = "💡 Nu veel rustiger dan normaal!";
+                } else if (prioriteiten[a.id] === 5) {
+                    a.waarom = "💡 Jouw absolute top-prioriteit!";
+                } else {
+                    a.waarom = "💡 Logische start van je dag.";
+                }
             } else {
-                a.waarom = "💡 Past goed in je tijdschema.";
+                // Je staat al in het park bij een attractie
+                if (huidigRijk === a.rijk && a.id !== 9) { 
+                    score += 40; 
+                    a.waarom = "💡 Dichtbij je huidige locatie!";
+                } else if (wachtVerschil > 15) {
+                    a.waarom = "💡 Nu veel rustiger dan normaal!";
+                } else if (prioriteiten[a.id] === 5) {
+                    a.waarom = "💡 Jouw absolute top-prioriteit!";
+                } else {
+                    a.waarom = "💡 Past goed in je route.";
+                }
             }
 
-            // Sprookjesbos uitzondering (is geen attractie, doe je als je in de buurt bent)
             if (a.id === 9) {
                 score = prioriteiten[a.id] * 15;
                 if (huidigRijk === "Marerijk") score += 50;
@@ -203,13 +210,10 @@ function berekenOptimalePlan(switchAfter = true) {
             a.smartScore = score;
         });
 
-        // Sorteer op de slimme score (hoogste eerst)
         lijst.sort((a,b) => b.smartScore - a.smartScore);
         
         const top = lijst[0];
         let wHtml = top.id === 9 ? `<div style="font-size:22px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">Geniet van het groen</div>` : `<div style="font-size:28px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">${top.wait} MIN</div>`;
-        
-        // Toon de slimme tag
         let tagHtml = top.waarom ? `<div class="smart-tag">${top.waarom}</div>` : '';
 
         document.getElementById('next-step-container').innerHTML = `
@@ -217,9 +221,10 @@ function berekenOptimalePlan(switchAfter = true) {
             ${tagHtml}${wHtml}
             <p style="font-size:13px; font-weight:700; color:#888; margin-bottom:15px;">Locatie: ${top.rijk}</p><button onclick="markAsDone(${top.id})" class="done-btn">✓ Bezocht</button></div>`;
             
+        // Tekst ingekort naar "Nu: X min" zoals gevraagd
         document.getElementById('route-container').innerHTML = lijst.slice(1).map(a => `
             <div class="card" style="margin: 8px 15px; opacity:0.85; transform:scale(0.96)">
-                <div class="card-content"><h3>${a.name}</h3><p style="margin:5px 0 0 0; color: #666; font-size: 13px; font-weight:700;">${a.id === 9 ? "Wandeling" : `Nu: ${a.wait} min (Beste moment komt nog)`}</p></div>
+                <div class="card-content"><h3>${a.name}</h3><p style="margin:5px 0 0 0; color: #666; font-size: 13px; font-weight:700;">${a.id === 9 ? "Wandeling" : `Nu: ${a.wait} min`}</p></div>
             </div>`).join('');
     } else {
         document.getElementById('next-step-container').innerHTML = `<div class="plan-header-card"><div class="top-attraction-name">Alles bezocht! 🏰</div><p style="font-weight:700; color:#888;">Tijd voor een snack.</p></div>`;
