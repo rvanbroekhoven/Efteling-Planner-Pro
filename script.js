@@ -101,7 +101,6 @@ function toonLijst() {
     const container = document.getElementById('rollercoasters-container');
     container.innerHTML = "";
     
-    // Alfabetisch sorteren
     let gesorteerdeAttracties = [...attractieData].sort((a, b) => a.name.localeCompare(b.name));
     
     gesorteerdeAttracties.forEach(item => {
@@ -109,7 +108,7 @@ function toonLijst() {
         const isGedaan = voltooid.has(item.id);
         const isDicht = item.status === "Gesloten" || item.status === "Onderhoud";
         
-        // VILLA VOLTA EASTER EGG (Draai 180 graden)
+        // VILLA VOLTA: Zet de speciale class aan
         const isVillaVolta = item.id === 19 ? "upside-down" : "";
         
         let sterren = "";
@@ -179,7 +178,7 @@ function berekenOptimalePlan(switchAfter = true) {
                 <button onclick="markAsDone(${top.id})" class="done-btn">✓ Bezocht</button>
             </div>`;
         document.getElementById('route-container').innerHTML = lijst.slice(1).map(a => `
-            <div class="card" style="opacity:0.85; transform:scale(0.96)">
+            <div class="card" style="margin: 8px 15px; opacity:0.85; transform:scale(0.96)">
                 <div class="card-content">
                     <h3>${a.name}</h3>
                     <p style="margin:5px 0 0 0; color: #666; font-size: 13px; font-weight:700;">Verwachte wachttijd: ${a.wait} min</p>

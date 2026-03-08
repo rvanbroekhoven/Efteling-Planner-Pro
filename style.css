@@ -24,7 +24,7 @@ h1, h2, h3, .top-attraction-name {
 
 .app-header {
     background-color: var(--efteling-blue); color: white;
-    padding: calc(45px + env(safe-area-inset-top)) 20px 15px;
+    padding: calc(15px + env(safe-area-inset-top)) 20px 15px;
     display: flex; justify-content: space-between; align-items: center;
     position: sticky; top: 0; z-index: 100; min-height: 24px;
 }
@@ -43,40 +43,60 @@ h1, h2, h3, .top-attraction-name {
 .divider { width: 85%; text-align: center; border-bottom: 1px solid #ddd; line-height: 0.1em; margin: 30px auto 25px auto; }
 .divider span { background: var(--efteling-bg); padding: 0 15px; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; }
 
+/* Kaarten: Breder en minder hoog gemaakt */
 .card {
-    background: white; margin: 12px 20px; border-radius: 18px;
-    display: flex; box-shadow: 0 6px 15px rgba(0,0,0,0.04); position: relative;
+    background: white; 
+    margin: 8px 10px; /* Marges verkleind voor meer breedte */
+    border-radius: 16px;
+    display: flex; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+    position: relative;
     transition: filter 0.3s ease;
 }
 
 .card.onderhoud { filter: grayscale(100%); opacity: 0.55; }
 
-/* De easter-egg class voor Villa Volta */
-.upside-down {
+/* VILLA VOLTA: Alleen de interne elementen draaien, de box en layout blijven intact! */
+.upside-down .card-img,
+.upside-down h3,
+.upside-down p,
+.upside-down .wait-badge,
+.upside-down .star {
     transform: rotate(180deg);
+    transform-origin: center center;
 }
 
-/* Perfecte Image Cropping */
 .card-img { 
-    width: 100px; /* Vaste breedte voor een strakke lijst */
-    flex-shrink: 0; /* Voorkomt dat de foto samengedrukt wordt */
-    align-self: stretch; /* Rekt de foto mee in de hoogte met de tekst */
-    min-height: 100px;
-    border-radius: 18px 0 0 18px; 
+    width: 80px; /* Verkleind voor lagere kaart */
+    flex-shrink: 0; 
+    align-self: stretch; 
+    min-height: 80px; /* Verkleind voor lagere kaart */
+    border-radius: 16px 0 0 16px; 
     background-color: #e0e0e0;
     background-size: cover; 
     background-position: center; 
     background-repeat: no-repeat;
 }
 
-.card-content { padding: 12px 15px; flex: 1; }
-.card-content h3 { margin: 0; font-size: 18px; color: var(--efteling-blue); }
-.card-content p { margin: 4px 0 0 0; font-size: 12px; color: #666; font-weight: 600;}
+.card-content { 
+    padding: 8px 12px; /* Padding verkleind voor lagere kaart */
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+}
 
-.wait-badge { position: absolute; top: 12px; right: 12px; background: var(--efteling-gold); color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 900; z-index: 2;}
+.card-content h3 { margin: 0; font-size: 17px; color: var(--efteling-blue); }
+.card-content p { margin: 2px 0 0 0; font-size: 11px; color: #666; font-weight: 700;}
 
-.star-rating { display: flex; gap: 8px; margin-top: 8px; }
-.star { font-size: 26px; color: #e5e5ea; cursor: pointer; transition: transform 0.1s; }
+.wait-badge { 
+    position: absolute; top: 10px; right: 10px; 
+    background: var(--efteling-gold); color: white; 
+    padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; z-index: 2;
+}
+
+.star-rating { display: flex; gap: 8px; margin-top: 6px; }
+.star { font-size: 24px; color: #e5e5ea; cursor: pointer; transition: transform 0.1s; }
 .star:active { transform: scale(1.2); }
 .star.active { color: var(--efteling-gold); }
 
@@ -98,12 +118,12 @@ h1, h2, h3, .top-attraction-name {
 .nav-item.active { color: var(--efteling-gold); }
 .nav-icon { display: block; font-size: 22px; margin-bottom: 4px; }
 
-.sticky-footer { position: fixed; bottom: 100px; width: 100%; display: flex; justify-content: center; z-index: 99; }
-.plan-btn { background: var(--efteling-gold); color: white; border: none; padding: 18px 45px; border-radius: 40px; font-weight: 800; font-size: 16px; font-family: 'Nunito', sans-serif; box-shadow: 0 8px 25px rgba(175, 148, 79, 0.4);}
+.sticky-footer { position: fixed; bottom: 110px; width: 100%; display: flex; justify-content: center; z-index: 99; pointer-events: none; }
+.plan-btn { background: var(--efteling-gold); color: white; border: none; padding: 16px 40px; border-radius: 40px; font-weight: 800; font-size: 16px; font-family: 'Nunito', sans-serif; box-shadow: 0 8px 25px rgba(175, 148, 79, 0.4); pointer-events: auto;}
 .action-footer { text-align: center; margin-top: 20px; }
 .secondary-btn { background: white; border: 1.5px solid var(--efteling-gold); color: var(--efteling-gold); padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 800; margin: 5px; font-family: 'Nunito', sans-serif;}
 
 .map-header { text-align: center; padding: 25px; }
 .map-header h2 { margin: 0; font-size: 26px; color: var(--efteling-blue); }
-.route-step { display: flex; align-items: center; gap: 15px; background: white; padding: 15px; margin: 0 20px 12px 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+.route-step { display: flex; align-items: center; gap: 15px; background: white; padding: 15px; margin: 0 15px 12px 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
 .step-num { background: var(--efteling-blue); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
