@@ -61,25 +61,16 @@ h1, h2, h3, .top-attraction-name {
 /* VILLA VOLTA FIX */
 .upside-down .card-img,
 .upside-down .wait-badge,
-.upside-down .star {
-    transform: rotate(180deg);
-    transform-origin: center center;
-}
-
-.upside-down h3, .upside-down p.rijk-tekst {
-    transform: rotate(180deg);
-    transform-origin: center center;
-    align-self: flex-start; 
-}
-
+.upside-down .star { transform: rotate(180deg); transform-origin: center center; }
+.upside-down h3, .upside-down p.rijk-tekst { transform: rotate(180deg); transform-origin: center center; align-self: flex-start; }
 .upside-down p.rijk-tekst { margin: 0 0 2px 0; }
 
-/* Image is nu breder (110px) */
+/* Afbeelding is nu 125px breed voor een strakker widescreen effect */
 .card-img { 
-    width: 110px; 
+    width: 125px; 
     flex-shrink: 0; 
     align-self: stretch; 
-    min-height: 80px; 
+    min-height: 85px; 
     border-radius: 16px 0 0 16px; 
     background-color: #e0e0e0;
     background-size: cover; 
@@ -87,22 +78,11 @@ h1, h2, h3, .top-attraction-name {
     background-repeat: no-repeat;
 }
 
-.card-content { 
-    padding: 8px 12px; 
-    flex: 1; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-}
-
+.card-content { padding: 8px 12px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
 .card-content h3 { margin: 0; font-size: 17px; color: var(--efteling-blue); }
 .card-content p.rijk-tekst { margin: 2px 0 0 0; font-size: 11px; color: #666; font-weight: 700;}
 
-.wait-badge { 
-    position: absolute; top: 10px; right: 10px; 
-    background: var(--efteling-gold); color: white; 
-    padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; z-index: 2;
-}
+.wait-badge { position: absolute; top: 10px; right: 10px; background: var(--efteling-gold); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; z-index: 2; }
 
 .star-rating { display: flex; gap: 8px; margin-top: 6px; }
 .star { font-size: 24px; color: #e5e5ea; cursor: pointer; transition: transform 0.1s; }
@@ -110,34 +90,18 @@ h1, h2, h3, .top-attraction-name {
 .star.active { color: var(--efteling-gold); }
 
 /* Dagplan */
-.plan-header-card {
-    background: white; width: 80%; padding: 35px 25px; border-radius: 25px;
-    text-align: center; border: 2px solid var(--efteling-gold);
-    box-shadow: 0 10px 30px rgba(175,148,79,0.15); margin: 25px auto; position: relative;
-}
+.plan-header-card { background: white; width: 80%; padding: 35px 25px; border-radius: 25px; text-align: center; border: 2px solid var(--efteling-gold); box-shadow: 0 10px 30px rgba(175,148,79,0.15); margin: 25px auto; position: relative; }
 .plan-header-card .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--efteling-gold); color: white; padding: 6px 18px; border-radius: 20px; font-size: 12px; font-weight: 800; letter-spacing: 1px; }
 .top-attraction-name { font-size: 26px; color: var(--efteling-blue); margin: 10px 0; }
 .done-btn { margin-top: 20px; background: #34c759; color: white; border: none; padding: 14px 25px; border-radius: 15px; font-weight: 800; font-size: 15px; width: 100%; font-family: 'Nunito', sans-serif;}
 
-.bottom-nav {
-    position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
-    display: flex; justify-content: space-around; padding: 12px 0 calc(15px + env(safe-area-inset-bottom));
-    border-top: 1px solid #eee; z-index: 100;
-}
+.bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px 0 calc(15px + env(safe-area-inset-bottom)); border-top: 1px solid #eee; z-index: 100; }
 .nav-item { text-align: center; font-size: 11px; color: #aaa; font-weight: 800; cursor: pointer; }
 .nav-item.active { color: var(--efteling-gold); }
 .nav-icon { display: block; font-size: 22px; margin-bottom: 4px; }
 
-/* FIX VOOR OVERLAP: Knop op de sweet-spot van 120px gezet */
-.sticky-footer { 
-    position: fixed; 
-    bottom: 120px; 
-    width: 100%; 
-    display: flex; 
-    justify-content: center; 
-    z-index: 99; 
-    pointer-events: none; 
-}
+/* Knop precies op de sweet-spot gezet, weg van de onderbalk */
+.sticky-footer { position: fixed; bottom: 105px; width: 100%; display: flex; justify-content: center; z-index: 99; pointer-events: none; }
 .plan-btn { background: var(--efteling-gold); color: white; border: none; padding: 16px 40px; border-radius: 40px; font-weight: 800; font-size: 16px; font-family: 'Nunito', sans-serif; box-shadow: 0 8px 25px rgba(175, 148, 79, 0.4); pointer-events: auto;}
 
 .action-footer { text-align: center; margin-top: 20px; }

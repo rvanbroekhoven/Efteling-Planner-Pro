@@ -1,7 +1,7 @@
 const API_URL = "https://api.allorigins.win/raw?url=https://queue-times.com/parks/160/queue_times.json";
 const WEATHER_API = "https://api.open-meteo.com/v1/forecast?latitude=51.65&longitude=5.05&current_weather=true";
 
-// Realistische basiswachttijden voor de simulatie
+// Basis data voor de offline simulatie-motor
 const basisWachttijden = {
     1: 35, 2: 45, 3: 40, 4: 50, 5: 30, 6: 25, 7: 45, 8: 40, 
     9: 0, 10: 20, 11: 10, 12: 25, 13: 15, 14: 10, 15: 30, 
@@ -76,40 +76,38 @@ async function updateWeather() {
     }
 }
 
-// 🧠 SLIMME SIMULATIE (Voor het geval we OFFLINE zijn)
+// 🧠 SLIMME SIMULATIE
 function genereerSimulatieTijden() {
     const nu = new Date();
     const uur = nu.getHours();
     const dag = nu.getDay(); // 0 = Zondag, 6 = Zaterdag
 
     let drukteFactor = 1.0;
-    if (dag === 0 || dag === 6) drukteFactor += 0.3; // Weekend is drukker
-    if (uur < 10 || uur >= 18) drukteFactor *= 0.6; // Ochtend/avond rustiger
+    if (dag === 0 || dag === 6) drukteFactor += 0.3; // Weekend
+    if (uur < 10 || uur >= 18) drukteFactor *= 0.6; // Ochtend/avond
     else if (uur >= 12 && uur <= 15) drukteFactor *= 1.3; // Piekuren
 
     attractieData.forEach(a => {
-        if (a.status !== "Onderhoud" && a.id !== 9) { // 9 is Sprookjesbos
+        if (a.status !== "Onderhoud" && a.id !== 9) { // 9 = Sprookjesbos
             let base = basisWachttijden[a.id] || 20;
-            let random = Math.floor(Math.random() * 11) - 5; // Variatie van -5 tot +5
+            let random = Math.floor(Math.random() * 11) - 5; 
             let gesimuleerd = Math.max(5, Math.round((base * drukteFactor) + random));
-            
-            // Afronden op 5-tallen voor een realistische weergave
             a.wait = Math.round(gesimuleerd / 5) * 5; 
             a.status = "Open";
         }
     });
 }
 
-// 🎢 LIVE WACHTTIJDEN MET FALLBACK
+// 🎢 LIVE WACHTTIJDEN MET FALLBACK & EXACT MATCH
 async function updateWachttijden() {
     const indicator = document.getElementById('last-update');
     indicator.innerText = "VERVERSEN...";
     indicator.classList.remove("offline");
 
-    // 1. Genereer altijd éérst een perfecte simulatie
+    // 1. Zorg altijd voor een gesimuleerd "Vangnet"
     genereerSimulatieTijden();
 
-    // 2. Probeer daarna de echte data op te halen en te overschrijven
+    // 2. Probeer echte data op te halen
     try {
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error("Netwerkfout");
@@ -118,14 +116,11 @@ async function updateWachttijden() {
         if (data && data.lands) {
             data.lands.forEach(land => {
                 land.rides.forEach(ride => {
-                    // Robuuste check: converteer alles naar kleine letters zonder spaties
-                    let apiName = ride.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-                    let match = attractieData.find(a => {
-                        let localName = a.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-                        return apiName.includes(localName) || localName.includes(apiName);
-                    });
+                    // DE OPLOSSING: Een 100% exacte match voorkomt dat Single-Rider overschrijft!
+                    let apiName = ride.name.toLowerCase().trim();
+                    let match = attractieData.find(a => a.name.toLowerCase().trim() === apiName);
 
-                    if (match && match.id !== 9) { // We overschrijven Sprookjesbos niet
+                    if (match && match.id !== 9) { // Nooit wachttijd voor Sprookjesbos
                         match.wait = ride.wait_time;
                         match.status = ride.is_open ? "Open" : "Gesloten";
                     }
@@ -134,7 +129,6 @@ async function updateWachttijden() {
             indicator.innerText = "● LIVE " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
     } catch (e) {
-        // Mislukt? Dan gebruiken we naadloos de simulatie data!
         indicator.innerText = "● OFFLINE SIM";
         indicator.classList.add("offline");
     } finally {
@@ -161,7 +155,7 @@ function toonLijst() {
             sterren += `<span class="star ${i<=p?'active':''}" onclick="${isDicht ? '' : `setPriority(${item.id},${i})`}">★</span>`;
         }
         
-        // Verberg de wachttijd badge bij het Sprookjesbos
+        // Verberg de wachttijd badge volledig voor het Sprookjesbos
         let waitDisplay = isSprookjesbos ? "display: none;" : (isDicht ? "background:#555;" : "");
         let waitText = !isDicht ? item.wait + ' min' : 'DICHT';
 
@@ -219,7 +213,8 @@ function berekenOptimalePlan(switchAfter = true) {
         lijst.sort((a,b) => (prioriteiten[b.id]*40 - b.wait) - (prioriteiten[a.id]*40 - a.wait));
         const top = lijst[0];
         
-        let wachttijdHtml = top.id === 9 ? `<div style="font-size:20px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">Wandeling</div>` : `<div style="font-size:28px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">${top.wait} MIN</div>`;
+        let isSprookjesbos = top.id === 9;
+        let wachttijdHtml = isSprookjesbos ? `<div style="font-size:22px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">Geniet van het groen</div>` : `<div style="font-size:28px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">${top.wait} MIN</div>`;
 
         document.getElementById('next-step-container').innerHTML = `
             <div class="plan-header-card">
@@ -271,7 +266,7 @@ function resetData() { if(confirm("Weet je het zeker? Alles wordt gewist.")) { l
 
 window.onload = () => {
     updateWeather(); 
-    updateWachttijden(); // Dit zorgt nu ook direct voor de simulatie
+    updateWachttijden(); 
     setInterval(updateWachttijden, 60000); 
     setInterval(updateWeather, 1800000); 
     switchView(activeView);
