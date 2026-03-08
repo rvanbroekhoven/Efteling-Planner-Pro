@@ -1,0 +1,15 @@
+{
+  "name": "Efteling Planner",
+  "short_name": "Efteling",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#001a33",
+  "theme_color": "#001a33",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

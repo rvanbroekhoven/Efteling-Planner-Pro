@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Efteling Plan">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>Efteling Planner Pro</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="weather-widget" id="weather-info">☀️ 12°C</div>
+        <h1 id="view-title">Mijn Prioriteiten</h1>
+        <div class="live-indicator" id="last-update">LADEN...</div>
+    </header>
+
+    <main id="app-content">
+        <section id="attracties-view">
+            <div class="view-intro">
+                <p>Geef je prioriteiten aan voor een magische dag.</p>
+            </div>
+            <div id="rollercoasters-container"></div>
+            <div class="sticky-footer">
+                <button onclick="berekenOptimalePlan()" class="plan-btn">Magische Route Berekenen</button>
+            </div>
+        </section>
+
+        <section id="plan-view" style="display: none;">
+            <div class="plan-container">
+                <div id="next-step-container"></div>
+                
+                <div class="divider"><span>Verwacht vervolg</span></div>
+                
+                <div id="route-container"></div>
+                <div class="action-footer">
+                    <button onclick="updateWachttijden()" class="secondary-btn">🔄 Ververs wachttijden</button>
+                    <button onclick="resetData()" class="secondary-btn">Alles wissen</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="sprookjes-view" style="display: none;">
+            <div class="map-header">
+                <h2>Sprookjesbos</h2>
+                <p id="sprookjes-stats">Totale wandeling: -- min</p>
+            </div>
+            <div id="sprookjes-route-container" class="route-list"></div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" id="nav-attracties" onclick="switchView('attracties')">
+            <span class="nav-icon">🎢</span><span>Attracties</span>
+        </div>
+        <div class="nav-item" id="nav-plan" onclick="switchView('plan')">
+            <span class="nav-icon">📅</span><span>Dagplan</span>
+        </div>
+        <div class="nav-item" id="nav-sprookjes" onclick="switchView('sprookjes')">
+            <span class="nav-icon">🍄</span><span>Bos</span>
+        </div>
+    </nav>
+
+    <script src="script.js"></script>
+</body>
+</html>
