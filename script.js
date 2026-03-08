@@ -1,17 +1,27 @@
 const API_URL = "https://api.allorigins.win/raw?url=https://queue-times.com/parks/160/queue_times.json";
-// Coördinaten van de Efteling (Kaatsheuvel)
 const WEATHER_API = "https://api.open-meteo.com/v1/forecast?latitude=51.65&longitude=5.05&current_weather=true";
 
+// Lijst fors uitgebreid en voorzien van de juiste Rijken
 let attractieData = [
-    { id: 1, name: "Joris en de Draak", wait: 20, status: "Open" },
-    { id: 2, name: "Symbolica", wait: 15, status: "Open" },
-    { id: 3, name: "Droomvlucht", wait: 15, status: "Open" },
-    { id: 4, name: "Danse Macabre", wait: 13, status: "Open" },
-    { id: 5, name: "Python", wait: 10, status: "Open" },
-    { id: 6, name: "Vogel Rok", wait: 15, status: "Open" },
-    { id: 7, name: "Baron 1898", wait: 0, status: "Onderhoud" },
-    { id: 8, name: "De Vliegende Hollander", wait: 0, status: "Onderhoud" },
-    { id: 9, name: "Sprookjesbos", wait: 5, status: "Open" }
+    { id: 1, name: "Joris en de Draak", wait: 20, status: "Open", rijk: "Ruigrijk" },
+    { id: 2, name: "Symbolica", wait: 15, status: "Open", rijk: "Fantasierijk" },
+    { id: 3, name: "Droomvlucht", wait: 15, status: "Open", rijk: "Marerijk" },
+    { id: 4, name: "Danse Macabre", wait: 13, status: "Open", rijk: "Anderrijk" },
+    { id: 5, name: "Python", wait: 10, status: "Open", rijk: "Ruigrijk" },
+    { id: 6, name: "Vogel Rok", wait: 15, status: "Open", rijk: "Reizenrijk" },
+    { id: 7, name: "Baron 1898", wait: 0, status: "Onderhoud", rijk: "Ruigrijk" },
+    { id: 8, name: "De Vliegende Hollander", wait: 0, status: "Onderhoud", rijk: "Ruigrijk" },
+    { id: 9, name: "Sprookjesbos", wait: 5, status: "Open", rijk: "Marerijk" },
+    { id: 10, name: "Carnaval Festival", wait: 5, status: "Open", rijk: "Reizenrijk" },
+    { id: 11, name: "Monorail", wait: 5, status: "Open", rijk: "Reizenrijk" },
+    { id: 12, name: "Fata Morgana", wait: 10, status: "Open", rijk: "Anderrijk" },
+    { id: 13, name: "Gondoletta", wait: 5, status: "Open", rijk: "Reizenrijk" },
+    { id: 14, name: "Halve Maen", wait: 5, status: "Open", rijk: "Ruigrijk" },
+    { id: 15, name: "Max & Moritz", wait: 15, status: "Open", rijk: "Anderrijk" },
+    { id: 16, name: "Pagode", wait: 5, status: "Open", rijk: "Reizenrijk" },
+    { id: 17, name: "Piraña", wait: 0, status: "Onderhoud", rijk: "Anderrijk" },
+    { id: 18, name: "Stoomcarrousel", wait: 5, status: "Open", rijk: "Marerijk" },
+    { id: 19, name: "Villa Volta", wait: 10, status: "Open", rijk: "Marerijk" }
 ];
 
 const sprookjesRoute = [
@@ -34,7 +44,7 @@ function save() {
     localStorage.setItem('eftelingView', activeView);
 }
 
-// 🌤️ LIVE WEER OPHALEN
+// 🌤️ LIVE WEER
 async function updateWeather() {
     try {
         const response = await fetch(WEATHER_API);
@@ -44,25 +54,23 @@ async function updateWeather() {
         const temp = Math.round(data.current_weather.temperature);
         const code = data.current_weather.weathercode;
         
-        // Vertaal de WMO weercode naar een emoji
         let emoji = "☁️";
-        if (code === 0) emoji = "☀️"; // Helder
-        else if (code === 1 || code === 2) emoji = "⛅"; // Gedeeltelijk bewolkt
-        else if (code === 3) emoji = "☁️"; // Bewolkt
-        else if (code >= 45 && code <= 48) emoji = "🌫️"; // Mist
-        else if (code >= 51 && code <= 67) emoji = "🌧️"; // Regen / Motregen
-        else if (code >= 71 && code <= 77) emoji = "🌨️"; // Sneeuw
-        else if (code >= 80 && code <= 82) emoji = "🌦️"; // Buien
-        else if (code >= 95) emoji = "⛈️"; // Onweer
+        if (code === 0) emoji = "☀️"; 
+        else if (code === 1 || code === 2) emoji = "⛅"; 
+        else if (code === 3) emoji = "☁️"; 
+        else if (code >= 45 && code <= 48) emoji = "🌫️"; 
+        else if (code >= 51 && code <= 67) emoji = "🌧️"; 
+        else if (code >= 71 && code <= 77) emoji = "🌨️"; 
+        else if (code >= 80 && code <= 82) emoji = "🌦️"; 
+        else if (code >= 95) emoji = "⛈️"; 
 
         document.getElementById('weather-info').innerText = `${emoji} ${temp}°C`;
     } catch (e) {
-        console.warn("Kon weer niet ophalen", e);
         document.getElementById('weather-info').innerText = "⛅ --°C";
     }
 }
 
-// 🎢 LIVE WACHTTIJDEN OPHALEN
+// 🎢 LIVE WACHTTIJDEN
 async function updateWachttijden() {
     document.getElementById('last-update').innerText = "VERVERSEN...";
     try {
@@ -76,6 +84,7 @@ async function updateWachttijden() {
                     let match = attractieData.find(a => ride.name.includes(a.name) || a.name.includes(ride.name));
                     if (match) {
                         match.wait = ride.wait_time;
+                        // Als API zegt 'gesloten', zetten wij hem netjes op Gesloten
                         match.status = ride.is_open ? "Open" : "Gesloten";
                     }
                 });
@@ -83,6 +92,7 @@ async function updateWachttijden() {
             document.getElementById('last-update').innerText = "● LIVE " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
     } catch (e) {
+        // Fallback als de proxy faalt
         document.getElementById('last-update').innerText = "OFFLINE";
     } finally {
         toonLijst();
@@ -93,19 +103,27 @@ async function updateWachttijden() {
 function toonLijst() {
     const container = document.getElementById('rollercoasters-container');
     container.innerHTML = "";
+    
+    // Zorg dat we alfabetisch of op logica sorteren, hier even op originele ID
     attractieData.forEach(item => {
         const p = prioriteiten[item.id] || 0;
         const isGedaan = voltooid.has(item.id);
+        // Controleer of attractie dicht is via API óf door onderhoud
+        const isDicht = item.status === "Gesloten" || item.status === "Onderhoud";
+        
         let sterren = "";
         for(let i=1; i<=5; i++) {
-            sterren += `<span class="star ${i<=p?'active':''}" onclick="setPriority(${item.id},${i})">★</span>`;
+            // Als hij dicht is, maken we sterren niet klikbaar
+            sterren += `<span class="star ${i<=p?'active':''}" onclick="${isDicht ? '' : `setPriority(${item.id},${i})`}">★</span>`;
         }
+        
         container.innerHTML += `
-            <div class="card" style="${isGedaan?'opacity:0.5':''}">
+            <div class="card ${isDicht ? 'onderhoud' : ''}" style="${isGedaan?'opacity:0.5':''}">
                 <div class="card-img">${item.name[0]}</div>
                 <div class="card-content">
-                    <span class="wait-badge">${item.status === 'Open' ? item.wait + ' min' : 'DICHT'}</span>
+                    <span class="wait-badge" style="${isDicht ? 'background:#555;' : ''}">${!isDicht ? item.wait + ' min' : 'DICHT'}</span>
                     <h3>${item.name}</h3>
+                    <p>${item.rijk}</p>
                     <div class="star-rating">${sterren}</div>
                 </div>
             </div>`;
@@ -147,15 +165,19 @@ function berekenOptimalePlan(switchAfter = true) {
             <div class="plan-header-card">
                 <span class="badge">NU DOEN</span>
                 <div class="top-attraction-name">${top.name}</div>
-                <div style="font-size:24px; color:var(--efteling-gold); font-weight:800;">${top.wait} MIN</div>
+                <div style="font-size:28px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">${top.wait} MIN</div>
+                <p style="font-size:13px; font-weight:700; color:#888; margin-bottom:15px;">Locatie: ${top.rijk}</p>
                 <button onclick="markAsDone(${top.id})" class="done-btn">✓ Bezocht</button>
             </div>`;
         document.getElementById('route-container').innerHTML = lijst.slice(1).map(a => `
             <div class="card" style="opacity:0.85; transform:scale(0.96)">
-                <div class="card-content"><h3>${a.name}</h3><p style="margin:5px 0 0 0; color: #666; font-size: 13px;">Verwachte wachttijd: ${a.wait} min</p></div>
+                <div class="card-content">
+                    <h3>${a.name}</h3>
+                    <p style="margin:5px 0 0 0; color: #666; font-size: 13px; font-weight:700;">Verwachte wachttijd: ${a.wait} min</p>
+                </div>
             </div>`).join('');
     } else {
-        document.getElementById('next-step-container').innerHTML = `<div class="plan-header-card"><div class="top-attraction-name">Alles bezocht! 🏰</div><p>Tijd voor een snack.</p></div>`;
+        document.getElementById('next-step-container').innerHTML = `<div class="plan-header-card"><div class="top-attraction-name">Alles bezocht! 🏰</div><p style="font-weight:700; color:#888;">Tijd voor een snack.</p></div>`;
         document.getElementById('route-container').innerHTML = "";
     }
     if(switchAfter) switchView('plan');
@@ -173,8 +195,8 @@ function toonSprookjes() {
         return `<div class="route-step">
             <div class="step-num">${i+1}</div>
             <div>
-                <strong style="font-family: 'Playfair Display', serif; font-size: 18px;">${s.naam}</strong>
-                <div class="walk-time">🚶 ${s.wandeltijd === 0 ? 'Startpunt' : s.wandeltijd + ' min wandelen vanaf vorige'}</div>
+                <strong style="font-size: 16px; font-weight:800; color:var(--efteling-blue);">${s.naam}</strong>
+                <div class="walk-time" style="font-weight:600; font-size:12px;">🚶 ${s.wandeltijd === 0 ? 'Startpunt' : s.wandeltijd + ' min wandelen vanaf vorige'}</div>
             </div>
         </div>`;
     }).join('');
@@ -186,9 +208,9 @@ function resetData() { if(confirm("Weet je het zeker? Alles wordt gewist.")) { l
 // INITIALISATIE
 window.onload = () => {
     toonLijst(); 
-    updateWeather(); // 🌤️ Haal direct het weer op!
+    updateWeather(); 
     updateWachttijden(); 
-    setInterval(updateWachttijden, 60000); // Wachttijden elke minuut
-    setInterval(updateWeather, 1800000); // Weer elk half uur
+    setInterval(updateWachttijden, 60000); 
+    setInterval(updateWeather, 1800000); 
     switchView(activeView);
 };

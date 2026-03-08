@@ -16,7 +16,12 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-h1, h2, h3, .top-attraction-name { font-family: 'Playfair Display', serif; font-weight: 700; }
+/* Strakke Nunito Koppen */
+h1, h2, h3, .top-attraction-name { 
+    font-family: 'Nunito', sans-serif; 
+    font-weight: 800; 
+    letter-spacing: -0.5px; 
+}
 
 /* Header */
 .app-header {
@@ -26,31 +31,37 @@ h1, h2, h3, .top-attraction-name { font-family: 'Playfair Display', serif; font-
     position: sticky; top: 0; z-index: 100; min-height: 24px;
 }
 
-.weather-widget { width: 65px; font-weight: 700; font-size: 13px; color: var(--efteling-gold); }
-.app-header h1 { font-size: 17px; margin: 0; text-align: center; flex: 1; letter-spacing: 1px; }
+.weather-widget { width: 65px; font-weight: 800; font-size: 13px; color: var(--efteling-gold); }
+.app-header h1 { font-size: 16px; margin: 0; text-align: center; flex: 1; letter-spacing: 1px; text-transform: uppercase; font-weight: 900;}
 
 .live-indicator { 
-    width: 65px; text-align: right; font-size: 9px; font-weight: 800; 
+    width: 65px; text-align: right; font-size: 9px; font-weight: 900; 
     color: var(--live-red); white-space: nowrap; overflow: hidden;
 }
 
 /* Intro & Dividers */
 .view-intro { padding: 25px 30px 10px; text-align: center; }
-.view-intro p { margin: 0; font-size: 16px; color: #555; line-height: 1.4; }
+.view-intro p { margin: 0; font-size: 16px; color: #555; line-height: 1.4; font-weight: 600;}
 
 .divider { width: 85%; text-align: center; border-bottom: 1px solid #ddd; line-height: 0.1em; margin: 30px auto 25px auto; }
-.divider span { background: var(--efteling-bg); padding: 0 15px; color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+.divider span { background: var(--efteling-bg); padding: 0 15px; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; }
 
 /* Kaarten */
 .card {
     background: white; margin: 12px 20px; border-radius: 18px;
     display: flex; box-shadow: 0 6px 15px rgba(0,0,0,0.04); position: relative;
+    transition: filter 0.3s ease;
 }
-.card-img { width: 90px; height: 90px; border-radius: 18px 0 0 18px; display: flex; align-items: center; justify-content: center; background: var(--efteling-blue); color: var(--efteling-gold); font-weight: bold; font-size: 32px; font-family: 'Playfair Display', serif;}
+
+/* Grijstint voor gesloten attracties */
+.card.onderhoud { filter: grayscale(100%); opacity: 0.55; }
+
+.card-img { width: 90px; height: 90px; border-radius: 18px 0 0 18px; display: flex; align-items: center; justify-content: center; background: var(--efteling-blue); color: var(--efteling-gold); font-weight: 900; font-size: 36px; }
 .card-content { padding: 12px 15px; flex: 1; }
 .card-content h3 { margin: 0; font-size: 18px; color: var(--efteling-blue); }
+.card-content p { margin: 4px 0 0 0; font-size: 12px; color: #666; font-weight: 600;}
 
-.wait-badge { position: absolute; top: 12px; right: 12px; background: var(--efteling-gold); color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; }
+.wait-badge { position: absolute; top: 12px; right: 12px; background: var(--efteling-gold); color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 900; }
 
 .star-rating { display: flex; gap: 8px; margin-top: 8px; }
 .star { font-size: 26px; color: #e5e5ea; cursor: pointer; transition: transform 0.1s; }
@@ -64,7 +75,7 @@ h1, h2, h3, .top-attraction-name { font-family: 'Playfair Display', serif; font-
     box-shadow: 0 10px 30px rgba(175,148,79,0.15); margin: 25px auto; position: relative;
 }
 .plan-header-card .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--efteling-gold); color: white; padding: 6px 18px; border-radius: 20px; font-size: 12px; font-weight: 800; letter-spacing: 1px; }
-.top-attraction-name { font-size: 28px; color: var(--efteling-blue); margin: 10px 0; }
+.top-attraction-name { font-size: 26px; color: var(--efteling-blue); margin: 10px 0; }
 .done-btn { margin-top: 20px; background: #34c759; color: white; border: none; padding: 14px 25px; border-radius: 15px; font-weight: 800; font-size: 15px; width: 100%; font-family: 'Nunito', sans-serif;}
 
 /* Navigatie */
@@ -73,17 +84,17 @@ h1, h2, h3, .top-attraction-name { font-family: 'Playfair Display', serif; font-
     display: flex; justify-content: space-around; padding: 12px 0 calc(15px + env(safe-area-inset-bottom));
     border-top: 1px solid #eee; z-index: 100;
 }
-.nav-item { text-align: center; font-size: 11px; color: #aaa; font-weight: 700; cursor: pointer; }
+.nav-item { text-align: center; font-size: 11px; color: #aaa; font-weight: 800; cursor: pointer; }
 .nav-item.active { color: var(--efteling-gold); }
 .nav-icon { display: block; font-size: 22px; margin-bottom: 4px; }
 
 .sticky-footer { position: fixed; bottom: 100px; width: 100%; display: flex; justify-content: center; z-index: 99; }
 .plan-btn { background: var(--efteling-gold); color: white; border: none; padding: 18px 45px; border-radius: 40px; font-weight: 800; font-size: 16px; font-family: 'Nunito', sans-serif; box-shadow: 0 8px 25px rgba(175, 148, 79, 0.4);}
 .action-footer { text-align: center; margin-top: 20px; }
-.secondary-btn { background: white; border: 1.5px solid var(--efteling-gold); color: var(--efteling-gold); padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 700; margin: 5px; font-family: 'Nunito', sans-serif;}
+.secondary-btn { background: white; border: 1.5px solid var(--efteling-gold); color: var(--efteling-gold); padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 800; margin: 5px; font-family: 'Nunito', sans-serif;}
 
 /* Sprookjes */
 .map-header { text-align: center; padding: 25px; }
 .map-header h2 { margin: 0; font-size: 26px; color: var(--efteling-blue); }
 .route-step { display: flex; align-items: center; gap: 15px; background: white; padding: 15px; margin: 0 20px 12px 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-.step-num { background: var(--efteling-blue); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; }
+.step-num { background: var(--efteling-blue); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
