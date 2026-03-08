@@ -16,14 +16,12 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Strakke Nunito Koppen */
 h1, h2, h3, .top-attraction-name { 
     font-family: 'Nunito', sans-serif; 
     font-weight: 800; 
     letter-spacing: -0.5px; 
 }
 
-/* Header */
 .app-header {
     background-color: var(--efteling-blue); color: white;
     padding: calc(45px + env(safe-area-inset-top)) 20px 15px;
@@ -39,36 +37,49 @@ h1, h2, h3, .top-attraction-name {
     color: var(--live-red); white-space: nowrap; overflow: hidden;
 }
 
-/* Intro & Dividers */
 .view-intro { padding: 25px 30px 10px; text-align: center; }
 .view-intro p { margin: 0; font-size: 16px; color: #555; line-height: 1.4; font-weight: 600;}
 
 .divider { width: 85%; text-align: center; border-bottom: 1px solid #ddd; line-height: 0.1em; margin: 30px auto 25px auto; }
 .divider span { background: var(--efteling-bg); padding: 0 15px; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; }
 
-/* Kaarten */
 .card {
     background: white; margin: 12px 20px; border-radius: 18px;
     display: flex; box-shadow: 0 6px 15px rgba(0,0,0,0.04); position: relative;
     transition: filter 0.3s ease;
 }
 
-/* Grijstint voor gesloten attracties */
 .card.onderhoud { filter: grayscale(100%); opacity: 0.55; }
 
-.card-img { width: 90px; height: 90px; border-radius: 18px 0 0 18px; display: flex; align-items: center; justify-content: center; background: var(--efteling-blue); color: var(--efteling-gold); font-weight: 900; font-size: 36px; }
+/* De easter-egg class voor Villa Volta */
+.upside-down {
+    transform: rotate(180deg);
+}
+
+/* Perfecte Image Cropping */
+.card-img { 
+    width: 100px; /* Vaste breedte voor een strakke lijst */
+    flex-shrink: 0; /* Voorkomt dat de foto samengedrukt wordt */
+    align-self: stretch; /* Rekt de foto mee in de hoogte met de tekst */
+    min-height: 100px;
+    border-radius: 18px 0 0 18px; 
+    background-color: #e0e0e0;
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat;
+}
+
 .card-content { padding: 12px 15px; flex: 1; }
 .card-content h3 { margin: 0; font-size: 18px; color: var(--efteling-blue); }
 .card-content p { margin: 4px 0 0 0; font-size: 12px; color: #666; font-weight: 600;}
 
-.wait-badge { position: absolute; top: 12px; right: 12px; background: var(--efteling-gold); color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 900; }
+.wait-badge { position: absolute; top: 12px; right: 12px; background: var(--efteling-gold); color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 900; z-index: 2;}
 
 .star-rating { display: flex; gap: 8px; margin-top: 8px; }
 .star { font-size: 26px; color: #e5e5ea; cursor: pointer; transition: transform 0.1s; }
 .star:active { transform: scale(1.2); }
 .star.active { color: var(--efteling-gold); }
 
-/* Dagplan */
 .plan-header-card {
     background: white; width: 80%; padding: 35px 25px; border-radius: 25px;
     text-align: center; border: 2px solid var(--efteling-gold);
@@ -78,7 +89,6 @@ h1, h2, h3, .top-attraction-name {
 .top-attraction-name { font-size: 26px; color: var(--efteling-blue); margin: 10px 0; }
 .done-btn { margin-top: 20px; background: #34c759; color: white; border: none; padding: 14px 25px; border-radius: 15px; font-weight: 800; font-size: 15px; width: 100%; font-family: 'Nunito', sans-serif;}
 
-/* Navigatie */
 .bottom-nav {
     position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
     display: flex; justify-content: space-around; padding: 12px 0 calc(15px + env(safe-area-inset-bottom));
@@ -93,7 +103,6 @@ h1, h2, h3, .top-attraction-name {
 .action-footer { text-align: center; margin-top: 20px; }
 .secondary-btn { background: white; border: 1.5px solid var(--efteling-gold); color: var(--efteling-gold); padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 800; margin: 5px; font-family: 'Nunito', sans-serif;}
 
-/* Sprookjes */
 .map-header { text-align: center; padding: 25px; }
 .map-header h2 { margin: 0; font-size: 26px; color: var(--efteling-blue); }
 .route-step { display: flex; align-items: center; gap: 15px; background: white; padding: 15px; margin: 0 20px 12px 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
