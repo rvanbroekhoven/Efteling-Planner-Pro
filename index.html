@@ -19,7 +19,7 @@
 <body>
     <header class="app-header">
         <div class="weather-widget" id="weather-info">⛅ --°C</div>
-        <h1 id="view-title">Mijn Prioriteiten</h1>
+        <h1 id="view-title">ATTRACTIES</h1>
         <div class="live-indicator" id="last-update">LADEN...</div>
     </header>
 
@@ -51,10 +51,23 @@
             <div class="map-header">
                 <h2>Sprookjesbos</h2>
                 <p id="sprookjes-stats">Totale wandeling: -- min</p>
+                <button onclick="openSprookjesModal()" class="add-btn">+ Aanpassen</button>
             </div>
             <div id="sprookjes-route-container" class="route-list"></div>
         </section>
     </main>
+
+    <div id="sprookjes-modal" class="modal">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+                <h3 style="margin:0; color:var(--efteling-blue);">Welke sprookjes?</h3>
+                <button onclick="closeSprookjesModal()" style="background:none; border:none; font-size:24px; color:#888; font-weight:bold;">×</button>
+            </div>
+            <p style="font-size:13px; color:#666; margin-top:0;">Vink je favorieten aan. Wij stippelen de beste looproute voor je uit.</p>
+            <div id="modal-list" style="max-height: 50vh; overflow-y: auto; margin-bottom: 20px;"></div>
+            <button onclick="saveSprookjes()" class="done-btn" style="margin:0;">Route Opslaan</button>
+        </div>
+    </div>
 
     <nav class="bottom-nav">
         <div class="nav-item active" id="nav-attracties" onclick="switchView('attracties')">
