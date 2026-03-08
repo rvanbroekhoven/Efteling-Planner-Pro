@@ -13,65 +13,33 @@ body {
     color: #333;
     padding-bottom: 120px;
     font-size: 15px;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* Elegante Koppen */
-h1, h2, h3, .top-attraction-name {
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-}
+h1, h2, h3, .top-attraction-name { font-family: 'Playfair Display', serif; font-weight: 700; }
 
-/* Header (Fix voor verspringen) */
+/* Header */
 .app-header {
     background-color: var(--efteling-blue); color: white;
     padding: calc(45px + env(safe-area-inset-top)) 20px 15px;
     display: flex; justify-content: space-between; align-items: center;
-    position: sticky; top: 0; z-index: 100;
-    min-height: 24px; /* Zorgt dat balk niet krimpt */
+    position: sticky; top: 0; z-index: 100; min-height: 24px;
 }
 
-.weather-widget { width: 65px; font-weight: 600; font-size: 13px; }
+.weather-widget { width: 65px; font-weight: 700; font-size: 13px; color: var(--efteling-gold); }
 .app-header h1 { font-size: 17px; margin: 0; text-align: center; flex: 1; letter-spacing: 1px; }
 
-/* Vaste breedte en nowrap voorkomt dat tekst op 2 regels komt */
 .live-indicator { 
-    width: 65px; 
-    text-align: right; 
-    font-size: 9px; 
-    font-weight: 800; 
-    color: var(--live-red); 
-    white-space: nowrap; 
-    overflow: hidden;
+    width: 65px; text-align: right; font-size: 9px; font-weight: 800; 
+    color: var(--live-red); white-space: nowrap; overflow: hidden;
 }
 
-/* Introductie tekst & Dividers (Fix voor linker rand) */
-.view-intro { 
-    padding: 25px 30px 10px; 
-    text-align: center; 
-}
-.view-intro p { 
-    margin: 0; 
-    font-size: 16px; 
-    color: #555; 
-    line-height: 1.4; 
-}
+/* Intro & Dividers */
+.view-intro { padding: 25px 30px 10px; text-align: center; }
+.view-intro p { margin: 0; font-size: 16px; color: #555; line-height: 1.4; }
 
-.divider {
-    width: 85%;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-    line-height: 0.1em;
-    margin: 30px auto 25px auto;
-}
-.divider span { 
-    background: var(--efteling-bg); 
-    padding: 0 15px; 
-    color: #888; 
-    font-size: 13px; 
-    text-transform: uppercase; 
-    letter-spacing: 1.5px; 
-    font-weight: 700;
-}
+.divider { width: 85%; text-align: center; border-bottom: 1px solid #ddd; line-height: 0.1em; margin: 30px auto 25px auto; }
+.divider span { background: var(--efteling-bg); padding: 0 15px; color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
 
 /* Kaarten */
 .card {
@@ -82,17 +50,14 @@ h1, h2, h3, .top-attraction-name {
 .card-content { padding: 12px 15px; flex: 1; }
 .card-content h3 { margin: 0; font-size: 18px; color: var(--efteling-blue); }
 
-.wait-badge {
-    position: absolute; top: 12px; right: 12px; background: var(--efteling-gold);
-    color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 800;
-}
+.wait-badge { position: absolute; top: 12px; right: 12px; background: var(--efteling-gold); color: white; padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; }
 
 .star-rating { display: flex; gap: 8px; margin-top: 8px; }
 .star { font-size: 26px; color: #e5e5ea; cursor: pointer; transition: transform 0.1s; }
 .star:active { transform: scale(1.2); }
 .star.active { color: var(--efteling-gold); }
 
-/* Dagplan Kaart */
+/* Dagplan */
 .plan-header-card {
     background: white; width: 80%; padding: 35px 25px; border-radius: 25px;
     text-align: center; border: 2px solid var(--efteling-gold);
@@ -102,13 +67,13 @@ h1, h2, h3, .top-attraction-name {
 .top-attraction-name { font-size: 28px; color: var(--efteling-blue); margin: 10px 0; }
 .done-btn { margin-top: 20px; background: #34c759; color: white; border: none; padding: 14px 25px; border-radius: 15px; font-weight: 800; font-size: 15px; width: 100%; font-family: 'Nunito', sans-serif;}
 
-/* Navigatie & Knoppen */
+/* Navigatie */
 .bottom-nav {
     position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
     display: flex; justify-content: space-around; padding: 12px 0 calc(15px + env(safe-area-inset-bottom));
     border-top: 1px solid #eee; z-index: 100;
 }
-.nav-item { text-align: center; font-size: 11px; color: #aaa; font-weight: 700; }
+.nav-item { text-align: center; font-size: 11px; color: #aaa; font-weight: 700; cursor: pointer; }
 .nav-item.active { color: var(--efteling-gold); }
 .nav-icon { display: block; font-size: 22px; margin-bottom: 4px; }
 

@@ -1,5 +1,6 @@
-// Nieuwe, stabielere proxy via AllOrigins in de hoop dat Safari deze makkelijker toelaat
 const API_URL = "https://api.allorigins.win/raw?url=https://queue-times.com/parks/160/queue_times.json";
+// Coördinaten van de Efteling (Kaatsheuvel)
+const WEATHER_API = "https://api.open-meteo.com/v1/forecast?latitude=51.65&longitude=5.05&current_weather=true";
 
 let attractieData = [
     { id: 1, name: "Joris en de Draak", wait: 20, status: "Open" },
@@ -33,6 +34,35 @@ function save() {
     localStorage.setItem('eftelingView', activeView);
 }
 
+// 🌤️ LIVE WEER OPHALEN
+async function updateWeather() {
+    try {
+        const response = await fetch(WEATHER_API);
+        if (!response.ok) throw new Error("Weer data niet bereikbaar");
+        const data = await response.json();
+        
+        const temp = Math.round(data.current_weather.temperature);
+        const code = data.current_weather.weathercode;
+        
+        // Vertaal de WMO weercode naar een emoji
+        let emoji = "☁️";
+        if (code === 0) emoji = "☀️"; // Helder
+        else if (code === 1 || code === 2) emoji = "⛅"; // Gedeeltelijk bewolkt
+        else if (code === 3) emoji = "☁️"; // Bewolkt
+        else if (code >= 45 && code <= 48) emoji = "🌫️"; // Mist
+        else if (code >= 51 && code <= 67) emoji = "🌧️"; // Regen / Motregen
+        else if (code >= 71 && code <= 77) emoji = "🌨️"; // Sneeuw
+        else if (code >= 80 && code <= 82) emoji = "🌦️"; // Buien
+        else if (code >= 95) emoji = "⛈️"; // Onweer
+
+        document.getElementById('weather-info').innerText = `${emoji} ${temp}°C`;
+    } catch (e) {
+        console.warn("Kon weer niet ophalen", e);
+        document.getElementById('weather-info').innerText = "⛅ --°C";
+    }
+}
+
+// 🎢 LIVE WACHTTIJDEN OPHALEN
 async function updateWachttijden() {
     document.getElementById('last-update').innerText = "VERVERSEN...";
     try {
@@ -50,12 +80,9 @@ async function updateWachttijden() {
                     }
                 });
             });
-            // Tijd noteren als succesvol (zonder seconden om breedte klein te houden)
             document.getElementById('last-update').innerText = "● LIVE " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
     } catch (e) {
-        console.warn("Kon live data niet ophalen door Safari blokkade of proxy limiet.", e);
-        // Fallback tekst
         document.getElementById('last-update').innerText = "OFFLINE";
     } finally {
         toonLijst();
@@ -125,7 +152,7 @@ function berekenOptimalePlan(switchAfter = true) {
             </div>`;
         document.getElementById('route-container').innerHTML = lijst.slice(1).map(a => `
             <div class="card" style="opacity:0.85; transform:scale(0.96)">
-                <div class="card-content"><h3>${a.name}</h3><p style="margin:5px 0 0 0; color: #666;">Verwachte wachttijd: ${a.wait} min</p></div>
+                <div class="card-content"><h3>${a.name}</h3><p style="margin:5px 0 0 0; color: #666; font-size: 13px;">Verwachte wachttijd: ${a.wait} min</p></div>
             </div>`).join('');
     } else {
         document.getElementById('next-step-container').innerHTML = `<div class="plan-header-card"><div class="top-attraction-name">Alles bezocht! 🏰</div><p>Tijd voor een snack.</p></div>`;
@@ -159,7 +186,9 @@ function resetData() { if(confirm("Weet je het zeker? Alles wordt gewist.")) { l
 // INITIALISATIE
 window.onload = () => {
     toonLijst(); 
+    updateWeather(); // 🌤️ Haal direct het weer op!
     updateWachttijden(); 
-    setInterval(updateWachttijden, 60000);
+    setInterval(updateWachttijden, 60000); // Wachttijden elke minuut
+    setInterval(updateWeather, 1800000); // Weer elk half uur
     switchView(activeView);
 };
