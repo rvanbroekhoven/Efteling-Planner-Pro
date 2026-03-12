@@ -88,7 +88,7 @@ function genereerSimulatieTijden() {
 async function updateWachttijden() {
     const ind = document.getElementById('last-update');
     ind.innerText = "VERVERSEN..."; ind.classList.remove("offline");
-    genereerSimulatieTijden();
+    
     try {
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error("Netwerkfout");
@@ -106,7 +106,9 @@ async function updateWachttijden() {
     } catch (e) {
         ind.innerText = "● OFFLINE SIM"; ind.classList.add("offline");
     } finally {
-        toonLijst(); if (activeView === 'plan') berekenOptimalePlan(false);
+        // Update het scherm met de zojuist opgehaalde (of gesimuleerde) data
+        toonLijst(); 
+        if (activeView === 'plan') berekenOptimalePlan(false);
     }
 }
 
@@ -164,7 +166,6 @@ function berekenOptimalePlan(switchAfter = true) {
     if(lijst.length > 0) {
         let nuUur = new Date().getHours();
         
-        // Zodra je de app opent of niks hebt voltooid, sta je bij de Ingang
         let lastVoltooidId = Array.from(voltooid).pop();
         let huidigRijk = lastVoltooidId ? attractieData.find(a => a.id === lastVoltooidId)?.rijk : "Ingang";
 
@@ -178,29 +179,17 @@ function berekenOptimalePlan(switchAfter = true) {
             a.waarom = "";
 
             if (huidigRijk === "Ingang") {
-                // Vanaf de ingang ben je sneller bij het Fantasierijk of Anderrijk
                 if (a.rijk === "Fantasierijk" || a.rijk === "Anderrijk") { 
-                    score += 30; 
-                    a.waarom = "💡 Dichtbij de ingang!";
-                } else if (wachtVerschil > 15) {
-                    a.waarom = "💡 Nu veel rustiger dan normaal!";
-                } else if (prioriteiten[a.id] === 5) {
-                    a.waarom = "💡 Jouw absolute top-prioriteit!";
-                } else {
-                    a.waarom = "💡 Logische start van je dag.";
-                }
+                    score += 30; a.waarom = "💡 Dichtbij de ingang!";
+                } else if (wachtVerschil > 15) { a.waarom = "💡 Nu veel rustiger dan normaal!";
+                } else if (prioriteiten[a.id] === 5) { a.waarom = "💡 Jouw absolute top-prioriteit!";
+                } else { a.waarom = "💡 Logische start van je dag."; }
             } else {
-                // Je staat al in het park bij een attractie
                 if (huidigRijk === a.rijk && a.id !== 9) { 
-                    score += 40; 
-                    a.waarom = "💡 Dichtbij je huidige locatie!";
-                } else if (wachtVerschil > 15) {
-                    a.waarom = "💡 Nu veel rustiger dan normaal!";
-                } else if (prioriteiten[a.id] === 5) {
-                    a.waarom = "💡 Jouw absolute top-prioriteit!";
-                } else {
-                    a.waarom = "💡 Past goed in je route.";
-                }
+                    score += 40; a.waarom = "💡 Dichtbij je huidige locatie!";
+                } else if (wachtVerschil > 15) { a.waarom = "💡 Nu veel rustiger dan normaal!";
+                } else if (prioriteiten[a.id] === 5) { a.waarom = "💡 Jouw absolute top-prioriteit!";
+                } else { a.waarom = "💡 Past goed in je route."; }
             }
 
             if (a.id === 9) {
@@ -221,7 +210,6 @@ function berekenOptimalePlan(switchAfter = true) {
             ${tagHtml}${wHtml}
             <p style="font-size:13px; font-weight:700; color:#888; margin-bottom:15px;">Locatie: ${top.rijk}</p><button onclick="markAsDone(${top.id})" class="done-btn">✓ Bezocht</button></div>`;
             
-        // Tekst ingekort naar "Nu: X min" zoals gevraagd
         document.getElementById('route-container').innerHTML = lijst.slice(1).map(a => `
             <div class="card" style="margin: 8px 15px; opacity:0.85; transform:scale(0.96)">
                 <div class="card-content"><h3>${a.name}</h3><p style="margin:5px 0 0 0; color: #666; font-size: 13px; font-weight:700;">${a.id === 9 ? "Wandeling" : `Nu: ${a.wait} min`}</p></div>
@@ -271,7 +259,26 @@ function saveSprookjes() {
 function resetData() { if(confirm("Weet je het zeker? Alles wordt gewist.")) { localStorage.clear(); location.reload(); } }
 
 window.onload = () => {
-    updateWeather(); updateWachttijden(); 
-    setInterval(updateWachttijden, 60000); setInterval(updateWeather, 1800000); 
+    // DE BUG FIX: Teken ALLES direct synchroon, ruim voordat fetch iets kan vertragen
+    genereerSimulatieTijden(); 
+    toonLijst();
+    if(activeView === 'plan') berekenOptimalePlan(false);
+    if(activeView === 'sprookjes') toonSprookjes();
     switchView(activeView);
+
+    // Daarna pas de externe data ophalen
+    updateWeather(); 
+    updateWachttijden(); 
+    setInterval(updateWachttijden, 60000); 
+    setInterval(updateWeather, 1800000); 
+
+    // ANIMATIE LOGICA (Verwijder splash na 1.2s)
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            splash.classList.add('hidden');
+            // Verwijder het compleet uit de DOM na de fade-out (0.4s)
+            setTimeout(() => splash.style.display = 'none', 400); 
+        }
+    }, 1200); 
 };
