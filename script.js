@@ -4,25 +4,25 @@ const WEATHER_API = "https://api.open-meteo.com/v1/forecast?latitude=51.65&longi
 const basisWachttijden = { 1: 35, 2: 45, 3: 40, 4: 50, 5: 30, 6: 25, 7: 45, 8: 40, 9: 0, 10: 20, 11: 10, 12: 25, 13: 15, 14: 10, 15: 30, 16: 10, 17: 30, 18: 5, 19: 20 };
 
 let attractieData = [
-    { id: 1, name: "Joris en de Draak", wait: 0, status: "Open", rijk: "Ruigrijk", img: "joris-en-de-draak.png" },
-    { id: 2, name: "Symbolica", wait: 0, status: "Open", rijk: "Fantasierijk", img: "symbolica.png" },
-    { id: 3, name: "Droomvlucht", wait: 0, status: "Open", rijk: "Marerijk", img: "droomvlucht.png" },
-    { id: 4, name: "Danse Macabre", wait: 0, status: "Open", rijk: "Anderrijk", img: "danse-macabre.png" },
-    { id: 5, name: "Python", wait: 0, status: "Open", rijk: "Ruigrijk", img: "python.png" },
-    { id: 6, name: "Vogel Rok", wait: 0, status: "Open", rijk: "Reizenrijk", img: "vogel-rok.png" },
-    { id: 7, name: "Baron 1898", wait: 0, status: "Onderhoud", rijk: "Ruigrijk", img: "baron-1898.png" },
-    { id: 8, name: "De Vliegende Hollander", wait: 0, status: "Onderhoud", rijk: "Ruigrijk", img: "de-vliegende-hollander.png" },
-    { id: 9, name: "Sprookjesbos", wait: 0, status: "Open", rijk: "Marerijk", img: "sprookjesbos.png" },
-    { id: 10, name: "Carnaval Festival", wait: 0, status: "Open", rijk: "Reizenrijk", img: "carnaval-festival.png" },
-    { id: 11, name: "Monorail", wait: 0, status: "Open", rijk: "Reizenrijk", img: "monorail.png" },
-    { id: 12, name: "Fata Morgana", wait: 0, status: "Open", rijk: "Anderrijk", img: "fata-morgana.png" },
-    { id: 13, name: "Gondoletta", wait: 0, status: "Open", rijk: "Reizenrijk", img: "gondoletta.png" },
-    { id: 14, name: "Halve Maen", wait: 0, status: "Open", rijk: "Ruigrijk", img: "halve-maen.png" },
-    { id: 15, name: "Max & Moritz", wait: 0, status: "Open", rijk: "Anderrijk", img: "max-en-moritz.png" },
-    { id: 16, name: "Pagode", wait: 0, status: "Open", rijk: "Reizenrijk", img: "pagode.png" },
-    { id: 17, name: "Piraña", wait: 0, status: "Onderhoud", rijk: "Anderrijk", img: "pirana.png" },
-    { id: 18, name: "Stoomcarrousel", wait: 0, status: "Open", rijk: "Marerijk", img: "stoomcarrousel.png" },
-    { id: 19, name: "Villa Volta", wait: 0, status: "Open", rijk: "Marerijk", img: "villa-volta.png" }
+    { id: 1, name: "Joris en de Draak", wait: 0, status: "Open", rijk: "Ruigrijk", img: "joris-en-de-draak.png", beschrijving: "Houten race-achtbaan waar Water en Vuur strijden.", duur: "2 min", feitjes: ["De topsnelheid is 75 km/u.", "Water en Vuur hebben een eigen afzonderlijke baan.", "Er zijn meer dan 100.000 bouten gebruikt."] },
+    { id: 2, name: "Symbolica", wait: 0, status: "Open", rijk: "Fantasierijk", img: "symbolica.png", beschrijving: "Een betoverend paleis vol magie en verborgen kamers.", duur: "7 min", feitjes: ["Er zijn 3 verschillende routes (Schatten, Helden, Muziek).", "Het is de duurste attractie ooit gebouwd in de Efteling (€35 miljoen).", "Pardoes ontwierp dit paleis zelf."] },
+    { id: 3, name: "Droomvlucht", wait: 0, status: "Open", rijk: "Marerijk", img: "droomvlucht.png", beschrijving: "Zweef door de wondere wereld van elfen en trollen.", duur: "6 min", feitjes: ["Geopend in 1993.", "Er hangen echte geurmachines in de attractie.", "De kastelen in het Zompenwoud zweven echt aan het plafond."] },
+    { id: 4, name: "Danse Macabre", wait: 0, status: "Open", rijk: "Anderrijk", img: "danse-macabre.png", beschrijving: "Griezelig muzikaal spektakel op een abdijplein.", duur: "3 min", feitjes: ["Vervangt het bekende Spookslot.", "Je zit op een gigantisch draaiend koorbank-systeem.", "Het koor zingt het klassieke stuk 'Danse Macabre'."] },
+    { id: 5, name: "Python", wait: 0, status: "Open", rijk: "Ruigrijk", img: "python.png", beschrijving: "Klassieke stalen achtbaan met dubbele looping en kurkentrekker.", duur: "2 min", feitjes: ["Geopend in 1981, toen de grootste van Europa.", "In 2018 is de baan grotendeels afgebroken en vernieuwd.", "Vroeger mocht je pas in de Python als je 1.20m was (nu nog steeds)."] },
+    { id: 6, name: "Vogel Rok", wait: 0, status: "Open", rijk: "Reizenrijk", img: "vogel-rok.png", beschrijving: "Indoor achtbaan in het donker.", duur: "1,5 min", feitjes: ["De vogel bij de ingang is de grootste van Europa volgens het Guinness Book.", "Tijdens de rit klinkt muziek van Ruud Bos.", "Je vliegt met 65 km/u door het donker."] },
+    { id: 7, name: "Baron 1898", wait: 0, status: "Onderhoud", rijk: "Ruigrijk", img: "baron-1898.png", beschrijving: "Dive coaster waarbij je 37,5 meter een mijnschacht in stort.", duur: "2 min", feitjes: ["De vrije val is 37,5 meter diep.", "Je valt in een mistige put geregeerd door de Witte Wieven.", "De grote klok luidt elke keer als een trein vertrekt."] },
+    { id: 8, name: "De Vliegende Hollander", wait: 0, status: "Onderhoud", rijk: "Ruigrijk", img: "de-vliegende-hollander.png", beschrijving: "Waterachtbaan rondom het behekste spookschip van Willem van der Decken.", duur: "3,5 min", feitjes: ["De voorgevel is een mix van bestaande historische panden.", "De mist in de donkere tunnel is koud water.", "Het schip 'duikt' aan het einde met een flinke splash in het water."] },
+    { id: 9, name: "Sprookjesbos", wait: 0, status: "Open", rijk: "Marerijk", img: "sprookjesbos.png", beschrijving: "Het hart van de Efteling, vol bekende en onbekende sprookjes.", duur: "Zelf bepalen", feitjes: ["Geopend op 31 mei 1952 met slechts 10 sprookjes.", "Anton Pieck is de originele ontwerper.", "Alle originele beelden werden bediend met oude grammofoonplaten."] },
+    { id: 10, name: "Carnaval Festival", wait: 0, status: "Open", rijk: "Reizenrijk", img: "carnaval-festival.png", beschrijving: "Vrolijke indoor rit langs verschillende landen van de wereld.", duur: "8 min", feitjes: ["Geopend in 1984.", "Het bekende deuntje is geschreven door Toon Hermans.", "Jokie de Prrretneus is de hoofdbewoner van de attractie."] },
+    { id: 11, name: "Monorail", wait: 0, status: "Open", rijk: "Reizenrijk", img: "monorail.png", beschrijving: "Rondrit in een slakkentrein boven het Lavenlaar.", duur: "12 min", feitjes: ["Je kunt zelf trappen, of de slak het werk laten doen.", "Biedt een mooi uitzicht over de huizen van het Volk van Laaf.", "Elke slak heeft een eigen uniek nummer."] },
+    { id: 12, name: "Fata Morgana", wait: 0, status: "Open", rijk: "Anderrijk", img: "fata-morgana.png", beschrijving: "Verboden boottocht door een mysterieuze stad uit 1001 Nacht.", duur: "8 min", feitjes: ["Er zijn meer dan 130 bewegende poppen (animatronics).", "De jungle scène ruikt echt naar oerwoud en nattigheid.", "De deuren openen automatisch door de waterstroming van de boot."] },
+    { id: 13, name: "Gondoletta", wait: 0, status: "Open", rijk: "Reizenrijk", img: "gondoletta.png", beschrijving: "Rustige boottocht over de grote siervijver.", duur: "20 min", feitjes: ["Oorspronkelijk ontworpen als testsysteem voor Fata Morgana.", "Het trekwiel ligt onzichtbaar onder het wateroppervlak.", "Ideaal moment om even uit te rusten en wat te eten."] },
+    { id: 14, name: "Halve Maen", wait: 0, status: "Open", rijk: "Ruigrijk", img: "halve-maen.png", beschrijving: "Een van de grootste schommelschepen ter wereld.", duur: "3 min", feitjes: ["Biedt plaats aan 85 personen per rit.", "Schommelt tot een indrukwekkende hoek van 180 graden.", "Geopend in 1982 en gebouwd door de Zwitserse fabrikant Intamin."] },
+    { id: 15, name: "Max & Moritz", wait: 0, status: "Open", rijk: "Anderrijk", img: "max-en-moritz.png", beschrijving: "Dubbele familieachtbaan over de streken van twee kwajongens.", duur: "2 min", feitjes: ["Vervangt de legendarische oude Bobsleebaan.", "De trein maakt twee volledige rondes per rit.", "De fart-kussens in de wachtrij produceren échte geluiden..."] },
+    { id: 16, name: "Pagode", wait: 0, status: "Open", rijk: "Reizenrijk", img: "pagode.png", beschrijving: "Vliegende Thaise tempel met een 360-graden uitzicht.", duur: "5 min", feitjes: ["Gaat tot maximaal 45 meter hoogte.", "De totale constructie weegt maar liefst 225 ton.", "De arm stamt uit de offshore techniek (kranen)."] },
+    { id: 17, name: "Piraña", wait: 0, status: "Open", rijk: "Anderrijk", img: "pirana.png", beschrijving: "Wildwaterbaan met ronde boten in Zuid-Amerikaanse sferen.", duur: "5 min", feitjes: ["Dit was in 1983 de eerste wildwaterbaan van dit type ter wereld.", "Twee grote watergoden (Acolna en Chura) spuiten je aan het eind nat.", "De pompen verplaatsen 3,5 miljoen liter water per uur."] },
+    { id: 18, name: "Stoomcarrousel", wait: 0, status: "Open", rijk: "Marerijk", img: "stoomcarrousel.png", beschrijving: "Schitterende, authentieke draaimolen uit 1895.", duur: "2 min", feitjes: ["Gekocht door de Efteling in 1955.", "Draait op échte, originele Gavioli orgelmuziek.", "Stond vóór de Efteling op diverse kermissen door Nederland."] },
+    { id: 19, name: "Villa Volta", wait: 0, status: "Open", rijk: "Marerijk", img: "villa-volta.png", beschrijving: "Vervloekt huis dat volledig over de kop lijkt te draaien.", duur: "10 min", feitjes: ["Dit was het allereerste 'Madhouse' ter wereld.", "Bokkrijder Hugo van den Loonsche Duynen is de hoofdbewoner.", "De kamer draait, maar de banken schommelen slechts."] }
 ];
 
 const masterSprookjes = [
@@ -106,7 +106,6 @@ async function updateWachttijden() {
     } catch (e) {
         ind.innerText = "● OFFLINE SIM"; ind.classList.add("offline");
     } finally {
-        // Update het scherm met de zojuist opgehaalde (of gesimuleerde) data
         toonLijst(); 
         if (activeView === 'plan') berekenOptimalePlan(false);
     }
@@ -126,10 +125,10 @@ function toonLijst() {
         
         container.innerHTML += `
             <div class="card ${isDicht ? 'onderhoud' : ''} ${isVillaVolta}" style="${isGedaan?'opacity:0.5':''}">
-                <div class="card-img" style="background-image: url('${item.img}');"></div>
+                <div class="card-img" style="background-image: url('${item.img}');" onclick="openAttractieModal(${item.id})"></div>
                 <div class="card-content">
                     <span class="wait-badge" style="${waitDisplay}">${!isDicht ? item.wait + ' min' : 'DICHT'}</span>
-                    <h3>${item.name}</h3><p class="rijk-tekst">${item.rijk}</p><div class="star-rating">${sterren}</div>
+                    <h3 onclick="openAttractieModal(${item.id})">${item.name}</h3><p class="rijk-tekst">${item.rijk}</p><div class="star-rating">${sterren}</div>
                 </div>
             </div>`;
     });
@@ -258,26 +257,49 @@ function saveSprookjes() {
 
 function resetData() { if(confirm("Weet je het zeker? Alles wordt gewist.")) { localStorage.clear(); location.reload(); } }
 
+// ℹ️ NIEUW: Logica voor de Attractie Details Modal
+function openAttractieModal(id) {
+    const attr = attractieData.find(a => a.id === id);
+    if(!attr) return;
+
+    document.getElementById('attractie-modal-img').style.backgroundImage = `url('${attr.img}')`;
+    document.getElementById('attractie-modal-title').innerText = attr.name;
+    document.getElementById('attractie-modal-rijk').innerText = '📍 ' + attr.rijk;
+    document.getElementById('attractie-modal-duur').innerText = '⏱️ ' + (attr.duur || 'Onbekend');
+    document.getElementById('attractie-modal-desc').innerText = attr.beschrijving || '';
+
+    if (attr.feitjes && attr.feitjes.length > 0) {
+        const randomFeitje = attr.feitjes[Math.floor(Math.random() * attr.feitjes.length)];
+        document.getElementById('attractie-modal-fact').innerText = randomFeitje;
+        document.getElementById('attractie-fact-box').style.display = 'block';
+    } else {
+        document.getElementById('attractie-fact-box').style.display = 'none';
+    }
+
+    document.getElementById('attractie-modal').style.display = 'flex';
+}
+
+function closeAttractieModal(e) {
+    if (e && e.target !== document.getElementById('attractie-modal') && e.target.className !== 'close-btn abs-close') return;
+    document.getElementById('attractie-modal').style.display = 'none';
+}
+
 window.onload = () => {
-    // DE BUG FIX: Teken ALLES direct synchroon, ruim voordat fetch iets kan vertragen
     genereerSimulatieTijden(); 
     toonLijst();
     if(activeView === 'plan') berekenOptimalePlan(false);
     if(activeView === 'sprookjes') toonSprookjes();
     switchView(activeView);
 
-    // Daarna pas de externe data ophalen
     updateWeather(); 
     updateWachttijden(); 
     setInterval(updateWachttijden, 60000); 
     setInterval(updateWeather, 1800000); 
 
-    // ANIMATIE LOGICA (Verwijder splash na 1.2s)
     setTimeout(() => {
         const splash = document.getElementById('splash-screen');
         if (splash) {
             splash.classList.add('hidden');
-            // Verwijder het compleet uit de DOM na de fade-out (0.4s)
             setTimeout(() => splash.style.display = 'none', 400); 
         }
     }, 1200); 
