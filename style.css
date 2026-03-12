@@ -46,6 +46,7 @@ h1, h2, h3, .top-attraction-name { font-family: 'Nunito', sans-serif; font-weigh
 .star:active { transform: scale(1.2); }
 .star.active { color: var(--efteling-gold); }
 
+/* Dagplan & AI Smart Tag */
 .plan-header-card { background: white; width: 80%; padding: 35px 25px; border-radius: 25px; text-align: center; border: 2px solid var(--efteling-gold); box-shadow: 0 10px 30px rgba(175,148,79,0.15); margin: 25px auto; position: relative; }
 .plan-header-card .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--efteling-gold); color: white; padding: 6px 18px; border-radius: 20px; font-size: 12px; font-weight: 800; letter-spacing: 1px; }
 .top-attraction-name { font-size: 26px; color: var(--efteling-blue); margin: 10px 0; }
@@ -69,21 +70,23 @@ h1, h2, h3, .top-attraction-name { font-family: 'Nunito', sans-serif; font-weigh
 .route-step { display: flex; align-items: center; gap: 15px; background: white; padding: 15px; margin: 0 15px 12px 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
 .step-num { background: var(--efteling-blue); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
 
-/* Modals */
-.modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(8px); align-items: center; justify-content: center; }
-.modal-content { background-color: var(--white); width: 85%; padding: 25px; border-radius: 25px; max-height: 80vh; display: flex; flex-direction: column; position: relative; }
+/* Modals & iOS Webkit Blur */
+.modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.3); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); align-items: center; justify-content: center; }
+.modal-content { background-color: var(--white); width: 85%; padding: 25px; border-radius: 25px; max-height: 80vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.2);}
 .close-btn { background: none; border: none; font-size: 24px; color: #888; font-weight: bold; cursor: pointer; }
-.abs-close { position: absolute; top: 15px; right: 15px; z-index: 10; background: rgba(255,255,255,0.8); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+
+/* Aangepaste strakke, perfect ronde sluitknop voor iOS */
+.abs-close { position: absolute; top: 15px; right: 15px; z-index: 10; background: rgba(255,255,255,0.95); width: 32px; height: 32px; padding: 0; margin: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; line-height: 1; box-shadow: 0 2px 10px rgba(0,0,0,0.15); border: none; color: #333;}
 
 /* Attractie Details Modal */
 .attractie-modal-content { padding: 0; overflow: hidden; }
-.modal-header-img { width: 100%; height: 180px; background-size: cover; background-position: center; background-color: #e0e0e0; }
+.modal-header-img { width: 100%; height: 200px; background-size: cover; background-position: center; background-color: #e0e0e0; }
 .attractie-modal-body { padding: 20px 25px; overflow-y: auto; }
-.attractie-modal-body h2 { margin: 0 0 10px 0; color: var(--efteling-blue); font-size: 24px; }
+.attractie-modal-body h2 { margin: 0 0 10px 0; color: var(--efteling-blue); font-size: 26px; }
 .attractie-stats { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-.stat-badge { background: #f0f0f0; color: #555; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 800; }
-.attractie-desc { font-size: 14px; line-height: 1.5; color: #444; margin-bottom: 20px; }
-.attractie-fact-box { background: #fff8e1; border-left: 4px solid var(--efteling-gold); padding: 12px 15px; border-radius: 0 12px 12px 0; font-size: 13px; color: #555; margin-bottom: 10px; }
+.stat-badge { background: var(--efteling-bg); color: #555; padding: 6px 14px; border-radius: 15px; font-size: 13px; font-weight: 800; border: 1px solid #e0d8c3;}
+.attractie-desc { font-size: 15px; line-height: 1.5; color: #444; margin-bottom: 20px; }
+.attractie-fact-box { background: #fff8e1; border-left: 4px solid var(--efteling-gold); padding: 15px; border-radius: 0 12px 12px 0; font-size: 14px; color: #555; margin-bottom: 10px; }
 
 .sprookje-label { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 700; color: #333; font-size: 15px;}
 .sprookje-label input { margin-right: 15px; transform: scale(1.3); accent-color: var(--efteling-gold); }
