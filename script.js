@@ -50,7 +50,7 @@ let attractieData = [
     
     { id: 12, name: "Fata Morgana", wait: 0, status: "Open", rijk: "Anderrijk", img: "fata-morgana.png", 
       beschrijving: "Vaar mee naar de Verboden Stad uit de legendarische vertellingen van 1001 Nacht. Jouw sloep glijdt door donkere oerwouden, bruisende Oosterse markten en zwaar bewaakte paleiskamers. Pas op voor de reusachtige Djinn en de slinkse krokodillen in het water!", 
-      duur: "8 min", feitjes: ["Tijdens je mysterieuze boottocht kom je maar liefst meer dan 130 complexe, bewegende animatronics tegen.", "Let op de luchtlucht: de jungle scène ruikt daadwerkelijk naar een vochtig, tropisch oerwoud door verborgen geurverspreiders.", "De zware paleisdeuren openen niet elektrisch; ze worden puur opengeduwd door de waterstroming van jouw naderende boot!"] },
+      duur: "8 min", feitjes: ["Tijdens je mysterieuze boottocht kom je maar liefst meer dan 130 complexe, bewegende animatronics tegen.", "Let op de lucht: de jungle scène ruikt daadwerkelijk naar een vochtig, tropisch oerwoud door verborgen geurverspreiders.", "De zware paleisdeuren openen niet elektrisch; ze worden puur opengeduwd door de waterstroming van jouw naderende boot!"] },
     
     { id: 13, name: "Gondoletta", wait: 0, status: "Open", rijk: "Reizenrijk", img: "gondoletta.png", 
       beschrijving: "Laat de drukte van het park even achter je. Neem plaats in een overdekt bootje en dobber een kleine twintig minuten lang over de rimpelloze Siervijver. Geniet van de prachtige bloementuinen, kwakende eendjes en de betoverende achtergrondmuziek.", 
@@ -120,10 +120,10 @@ async function updateWeather() {
         const data = await response.json();
         const temp = Math.round(data.current_weather.temperature);
         const code = data.current_weather.weathercode;
-        let emoji = "☁️";
-        if (code === 0) emoji = "☀️"; else if (code <= 2) emoji = "⛅"; else if (code <= 48) emoji = "🌫️"; else if (code <= 67) emoji = "🌧️"; else if (code <= 77) emoji = "🌨️"; else if (code <= 82) emoji = "🌦️"; else emoji = "⛈️"; 
-        document.getElementById('weather-info').innerText = `${emoji} ${temp}°C`;
-    } catch (e) { document.getElementById('weather-info').innerText = "⛅ --°C"; }
+        let icon = "weer-bewolkt.png";
+        if (code === 0) icon = "weer-zon.png"; else if (code <= 2) icon = "weer-halfbewolkt.png"; else if (code <= 48) icon = "weer-mist.png"; else if (code <= 67) icon = "weer-regen.png"; else if (code <= 77) icon = "weer-sneeuw.png"; else if (code <= 82) icon = "weer-buien.png"; else icon = "weer-onweer.png"; 
+        document.getElementById('weather-info').innerHTML = `<img src="${icon}" class="weather-icon"> ${temp}°C`;
+    } catch (e) { document.getElementById('weather-info').innerHTML = `<img src="weer-halfbewolkt.png" class="weather-icon"> --°C`; }
 }
 
 function genereerSimulatieTijden() {
@@ -175,7 +175,10 @@ function toonLijst() {
         const isDicht = item.status === "Gesloten" || item.status === "Onderhoud";
         const isVillaVolta = item.id === 19 ? "upside-down" : "";
         let sterren = "";
-        for(let i=1; i<=5; i++) sterren += `<span class="star ${i<=p?'active':''}" onclick="${isDicht ? '' : `setPriority(${item.id},${i})`}">★</span>`;
+        for(let i=1; i<=5; i++) {
+            let starImg = i <= p ? 'icon-ster-vol.png' : 'icon-ster-leeg.png';
+            sterren += `<div class="star-icon" style="background-image: url('${starImg}');" onclick="${isDicht ? '' : `setPriority(${item.id},${i})`}"></div>`;
+        }
         
         let waitDisplay = item.id === 9 ? "display: none;" : (isDicht ? "background:#555;" : "");
         
@@ -220,7 +223,6 @@ function berekenOptimalePlan(switchAfter = true) {
 
     if(lijst.length > 0) {
         let nuUur = new Date().getHours();
-        
         let lastVoltooidId = Array.from(voltooid).pop();
         let huidigRijk = lastVoltooidId ? attractieData.find(a => a.id === lastVoltooidId)?.rijk : "Ingang";
 
@@ -228,29 +230,23 @@ function berekenOptimalePlan(switchAfter = true) {
             let score = prioriteiten[a.id] * 20; 
             let verwacht = getVerwachteWachtVoorTijd(a, nuUur);
             let wachtVerschil = verwacht - a.wait; 
-            
             score += (wachtVerschil * 1.5); 
             score -= (a.wait * 0.5); 
             a.waarom = "";
 
             if (huidigRijk === "Ingang") {
-                if (a.rijk === "Fantasierijk" || a.rijk === "Anderrijk") { 
-                    score += 30; a.waarom = "💡 Dichtbij de ingang!";
-                } else if (wachtVerschil > 15) { a.waarom = "💡 Nu veel rustiger dan normaal!";
-                } else if (prioriteiten[a.id] === 5) { a.waarom = "💡 Jouw absolute top-prioriteit!";
-                } else { a.waarom = "💡 Logische start van je dag."; }
+                if (a.rijk === "Fantasierijk" || a.rijk === "Anderrijk") { score += 30; a.waarom = "Dichtbij de ingang!"; } 
+                else if (wachtVerschil > 15) { a.waarom = "Nu veel rustiger dan normaal!"; } 
+                else if (prioriteiten[a.id] === 5) { a.waarom = "Jouw absolute top-prioriteit!"; } 
+                else { a.waarom = "Logische start van je dag."; }
             } else {
-                if (huidigRijk === a.rijk && a.id !== 9) { 
-                    score += 40; a.waarom = "💡 Dichtbij je huidige locatie!";
-                } else if (wachtVerschil > 15) { a.waarom = "💡 Nu veel rustiger dan normaal!";
-                } else if (prioriteiten[a.id] === 5) { a.waarom = "💡 Jouw absolute top-prioriteit!";
-                } else { a.waarom = "💡 Past goed in je route."; }
+                if (huidigRijk === a.rijk && a.id !== 9) { score += 40; a.waarom = "Dichtbij je huidige locatie!"; } 
+                else if (wachtVerschil > 15) { a.waarom = "Nu veel rustiger dan normaal!"; } 
+                else if (prioriteiten[a.id] === 5) { a.waarom = "Jouw absolute top-prioriteit!"; } 
+                else { a.waarom = "Past goed in je route."; }
             }
 
-            if (a.id === 9) {
-                score = prioriteiten[a.id] * 15;
-                if (huidigRijk === "Marerijk") score += 50;
-            }
+            if (a.id === 9) { score = prioriteiten[a.id] * 15; if (huidigRijk === "Marerijk") score += 50; }
             a.smartScore = score;
         });
 
@@ -258,19 +254,19 @@ function berekenOptimalePlan(switchAfter = true) {
         
         const top = lijst[0];
         let wHtml = top.id === 9 ? `<div style="font-size:22px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">Geniet van het groen</div>` : `<div style="font-size:28px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">${top.wait} MIN</div>`;
-        let tagHtml = top.waarom ? `<div class="smart-tag">${top.waarom}</div>` : '';
+        let tagHtml = top.waarom ? `<div class="smart-tag"><img src="icon-feitje.png" class="fact-icon">${top.waarom}</div>` : '';
 
         document.getElementById('next-step-container').innerHTML = `
             <div class="plan-header-card"><span class="badge">NU DOEN</span><div class="top-attraction-name">${top.name}</div>
             ${tagHtml}${wHtml}
-            <p style="font-size:13px; font-weight:700; color:#888; margin-bottom:15px;">Locatie: ${top.rijk}</p><button onclick="markAsDone(${top.id})" class="done-btn">✓ Bezocht</button></div>`;
+            <p style="font-size:13px; font-weight:700; color:#888; margin-bottom:15px;"><img src="icon-locatie.png" class="stat-icon"> ${top.rijk}</p><button onclick="markAsDone(${top.id})" class="done-btn">✓ Bezocht</button></div>`;
             
         document.getElementById('route-container').innerHTML = lijst.slice(1).map(a => `
             <div class="card" style="margin: 8px 15px; opacity:0.85; transform:scale(0.96)">
                 <div class="card-content"><h3>${a.name}</h3><p style="margin:5px 0 0 0; color: #666; font-size: 13px; font-weight:700;">${a.id === 9 ? "Wandeling" : `Nu: ${a.wait} min`}</p></div>
             </div>`).join('');
     } else {
-        document.getElementById('next-step-container').innerHTML = `<div class="plan-header-card"><div class="top-attraction-name">Alles bezocht! 🏰</div><p style="font-weight:700; color:#888;">Tijd voor een snack.</p></div>`;
+        document.getElementById('next-step-container').innerHTML = `<div class="plan-header-card"><div class="top-attraction-name">Alles bezocht!</div><p style="font-weight:700; color:#888;">Tijd voor een snack.</p></div>`;
         document.getElementById('route-container').innerHTML = "";
     }
     if(switchAfter) switchView('plan');
@@ -285,7 +281,7 @@ function toonSprookjes() {
         accuWalk += s.wandelTijdVanafVorig; 
         if(selectedSprookjes.includes(s.id)) {
             count++; totalTime += accuWalk;
-            html += `<div class="route-step"><div class="step-num">${count}</div><div><strong style="font-size: 16px; font-weight:800; color:var(--efteling-blue);">${s.naam}</strong><div class="walk-time" style="font-weight:600; font-size:12px;">🚶 ${count === 1 ? 'Startpunt' : accuWalk + ' min lopen'}</div></div></div>`;
+            html += `<div class="route-step"><div class="step-num">${count}</div><div><strong style="font-size: 16px; font-weight:800; color:var(--efteling-blue);">${s.naam}</strong><div class="walk-time" style="font-weight:600; font-size:12px;"><img src="icon-wandelen.png" class="walk-icon"> ${count === 1 ? 'Startpunt' : accuWalk + ' min lopen'}</div></div></div>`;
             accuWalk = 0; 
         }
     });
@@ -319,8 +315,8 @@ function openAttractieModal(id) {
 
     document.getElementById('attractie-modal-img').style.backgroundImage = `url('${attr.img}')`;
     document.getElementById('attractie-modal-title').innerText = attr.name;
-    document.getElementById('attractie-modal-rijk').innerText = '📍 ' + attr.rijk;
-    document.getElementById('attractie-modal-duur').innerText = '⏱️ ' + (attr.duur || 'Onbekend');
+    document.getElementById('attractie-modal-rijk').innerHTML = `<img src="icon-locatie.png" class="stat-icon"> ${attr.rijk}`;
+    document.getElementById('attractie-modal-duur').innerHTML = `<img src="icon-tijd.png" class="stat-icon"> ${attr.duur || 'Onbekend'}`;
     document.getElementById('attractie-modal-desc').innerText = attr.beschrijving || '';
 
     if (attr.feitjes && attr.feitjes.length > 0) {

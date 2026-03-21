@@ -18,12 +18,12 @@
 </head>
 <body>
     <div id="splash-screen">
-        <div class="splash-logo">✨</div>
+        <img src="splash-logo.png" class="splash-logo" alt="Efteling Planner">
         <div class="splash-text">Efteling Planner</div>
     </div>
 
     <header class="app-header">
-        <div class="weather-widget" id="weather-info">⛅ --°C</div>
+        <div class="weather-widget" id="weather-info"><img src="weer-halfbewolkt.png" class="weather-icon"> --°C</div>
         <h1 id="view-title">ATTRACTIES</h1>
         <div class="live-indicator" id="last-update">LADEN...</div>
     </header>
@@ -32,7 +32,9 @@
         <section id="attracties-view">
             <div class="view-intro">
                 <p>Geef je prioriteiten aan voor een magische dag.</p>
-                <button onclick="wisPrioriteiten()" class="secondary-btn" style="margin-top: 12px; font-size: 12px; padding: 6px 15px;">⭐ Selectie wissen</button>
+                <button onclick="wisPrioriteiten()" class="secondary-btn" style="margin-top: 12px; font-size: 12px; padding: 6px 15px;">
+                    <img src="icon-ster-vol.png" class="btn-icon"> Selectie wissen
+                </button>
             </div>
             <div id="rollercoasters-container"></div>
             <div class="sticky-footer">
@@ -46,7 +48,7 @@
                 <div class="divider"><span>Verwacht vervolg (Meest Efficiënt)</span></div>
                 <div id="route-container"></div>
                 <div class="action-footer">
-                    <button onclick="updateWachttijden()" class="secondary-btn">🔄 Ververs wachttijden</button>
+                    <button onclick="updateWachttijden()" class="secondary-btn">Ververs wachttijden</button>
                     <button onclick="resetData()" class="secondary-btn">Alles wissen</button>
                 </div>
             </div>
@@ -86,7 +88,7 @@
                 </div>
                 <p id="attractie-modal-desc" class="attractie-desc"></p>
                 <div id="attractie-fact-box" class="attractie-fact-box">
-                    <strong>💡 Wist je dat?</strong>
+                    <strong><img src="icon-feitje.png" class="fact-icon"> Wist je dat?</strong>
                     <p id="attractie-modal-fact" style="margin: 5px 0 0 0;"></p>
                 </div>
             </div>
@@ -95,13 +97,13 @@
 
     <nav class="bottom-nav">
         <div class="nav-item active" id="nav-attracties" onclick="switchView('attracties')">
-            <span class="nav-icon">🎢</span><span>Attracties</span>
+            <img src="nav-attracties.png" class="nav-icon-img"><span>Attracties</span>
         </div>
         <div class="nav-item" id="nav-plan" onclick="switchView('plan')">
-            <span class="nav-icon">📅</span><span>Dagplan</span>
+            <img src="nav-dagplan.png" class="nav-icon-img"><span>Dagplan</span>
         </div>
         <div class="nav-item" id="nav-sprookjes" onclick="switchView('sprookjes')">
-            <span class="nav-icon">🍄</span><span>Bos</span>
+            <img src="nav-bos.png" class="nav-icon-img"><span>Bos</span>
         </div>
     </nav>
 

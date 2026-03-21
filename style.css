@@ -17,7 +17,7 @@ body {
 h1, h2, h3, .top-attraction-name { font-family: 'Nunito', sans-serif; font-weight: 800; letter-spacing: -0.5px; }
 
 .app-header { background-color: var(--efteling-blue); color: white; padding: calc(15px + env(safe-area-inset-top)) 20px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; min-height: 24px; }
-.weather-widget { width: 65px; font-weight: 800; font-size: 13px; color: var(--efteling-gold); }
+.weather-widget { width: 75px; font-weight: 800; font-size: 13px; color: var(--efteling-gold); }
 .app-header h1 { font-size: 16px; margin: 0; text-align: center; flex: 1; letter-spacing: 1px; text-transform: uppercase; font-weight: 900;}
 .live-indicator { width: 65px; text-align: right; font-size: 9px; font-weight: 900; color: var(--live-red); white-space: nowrap; overflow: hidden; }
 .live-indicator.offline { color: var(--live-gray); }
@@ -31,7 +31,7 @@ h1, h2, h3, .top-attraction-name { font-family: 'Nunito', sans-serif; font-weigh
 .card { background: white; margin: 8px 10px; border-radius: 16px; display: flex; box-shadow: 0 4px 12px rgba(0,0,0,0.04); position: relative; transition: filter 0.3s ease; }
 .card.onderhoud { filter: grayscale(100%); opacity: 0.55; }
 
-.upside-down .card-img, .upside-down .wait-badge, .upside-down .star { transform: rotate(180deg); transform-origin: center center; }
+.upside-down .card-img, .upside-down .wait-badge, .upside-down .star-icon { transform: rotate(180deg); transform-origin: center center; }
 .upside-down h3, .upside-down p.rijk-tekst { transform: rotate(180deg); transform-origin: center center; align-self: flex-start; }
 .upside-down p.rijk-tekst { margin: 0 0 2px 0; }
 
@@ -41,10 +41,17 @@ h1, h2, h3, .top-attraction-name { font-family: 'Nunito', sans-serif; font-weigh
 .card-content p.rijk-tekst { margin: 2px 0 0 0; font-size: 11px; color: #666; font-weight: 700;}
 
 .wait-badge { position: absolute; top: 10px; right: 10px; background: var(--efteling-gold); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; z-index: 2; }
-.star-rating { display: flex; gap: 8px; margin-top: 6px; }
-.star { font-size: 24px; color: #e5e5ea; cursor: pointer; transition: transform 0.1s; }
-.star:active { transform: scale(1.2); }
-.star.active { color: var(--efteling-gold); }
+
+/* Custom Icons Setup */
+.star-rating { display: flex; gap: 6px; margin-top: 6px; }
+.star-icon { width: 24px; height: 24px; cursor: pointer; transition: transform 0.1s; background-size: cover; display: inline-block; }
+.star-icon:active { transform: scale(1.2); }
+
+.weather-icon { width: 20px; height: 20px; vertical-align: middle; margin-right: 4px; margin-top: -2px;}
+.btn-icon { width: 14px; height: 14px; vertical-align: middle; margin-right: 4px; margin-top: -2px; }
+.stat-icon { width: 14px; height: 14px; vertical-align: middle; margin-right: 4px; margin-top: -2px; }
+.fact-icon { width: 16px; height: 16px; vertical-align: middle; margin-right: 4px; margin-top: -2px; }
+.walk-icon { width: 14px; height: 14px; vertical-align: middle; margin-right: 4px; margin-top: -2px; }
 
 /* Dagplan & AI Smart Tag */
 .plan-header-card { background: white; width: 80%; padding: 35px 25px; border-radius: 25px; text-align: center; border: 2px solid var(--efteling-gold); box-shadow: 0 10px 30px rgba(175,148,79,0.15); margin: 25px auto; position: relative; }
@@ -56,7 +63,9 @@ h1, h2, h3, .top-attraction-name { font-family: 'Nunito', sans-serif; font-weigh
 .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 6px 0 calc(6px + env(safe-area-inset-bottom)); border-top: 1px solid #e5e5e5; z-index: 100; }
 .nav-item { text-align: center; font-size: 11px; color: #aaa; font-weight: 800; cursor: pointer; padding: 5px; }
 .nav-item.active { color: var(--efteling-gold); }
-.nav-icon { display: block; font-size: 22px; margin-bottom: 2px; }
+
+.nav-icon-img { display: block; width: 26px; height: 26px; margin: 0 auto 2px auto; opacity: 0.35; transition: opacity 0.2s; }
+.nav-item.active .nav-icon-img { opacity: 1; }
 
 .sticky-footer { position: fixed; bottom: calc(75px + env(safe-area-inset-bottom)); width: 100%; display: flex; justify-content: center; z-index: 99; pointer-events: none; }
 .plan-btn { background: var(--efteling-gold); color: white; border: none; padding: 16px 40px; border-radius: 40px; font-weight: 800; font-size: 16px; font-family: 'Nunito', sans-serif; box-shadow: 0 8px 25px rgba(175, 148, 79, 0.4); pointer-events: auto;}
@@ -74,8 +83,6 @@ h1, h2, h3, .top-attraction-name { font-family: 'Nunito', sans-serif; font-weigh
 .modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.3); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); align-items: center; justify-content: center; }
 .modal-content { background-color: var(--white); width: 85%; padding: 25px; border-radius: 25px; max-height: 80vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.2);}
 .close-btn { background: none; border: none; font-size: 24px; color: #888; font-weight: bold; cursor: pointer; }
-
-/* Aangepaste strakke, perfect ronde sluitknop voor iOS */
 .abs-close { position: absolute; top: 15px; right: 15px; z-index: 10; background: rgba(255,255,255,0.95); width: 32px; height: 32px; padding: 0; margin: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; line-height: 1; box-shadow: 0 2px 10px rgba(0,0,0,0.15); border: none; color: #333;}
 
 /* Attractie Details Modal */
@@ -93,7 +100,7 @@ h1, h2, h3, .top-attraction-name { font-family: 'Nunito', sans-serif; font-weigh
 
 #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--efteling-blue); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; color: var(--efteling-gold); transition: opacity 0.4s ease-out, visibility 0.4s ease-out; }
 #splash-screen.hidden { opacity: 0; visibility: hidden; }
-.splash-logo { font-size: 70px; animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+.splash-logo { width: 120px; height: auto; animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 .splash-text { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 22px; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase; opacity: 0; animation: fadeInUp 0.5s ease-out 0.3s forwards; color: white; }
 @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 @keyframes fadeInUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
