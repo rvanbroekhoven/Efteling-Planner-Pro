@@ -8,48 +8,201 @@ const basisWachttijden = {
     16: 10, 17: 30, 18: 5, 19: 20 
 };
 
-// --- DATA: ATTRACTIES MET GPS (LAT/LNG) ---
+// --- DATA: ATTRACTIES ---
 let attractieData = [
-    { id: 1, name: "Joris en de Draak", wait: 0, status: "Open", rijk: "Ruigrijk", img: "joris-en-de-draak.png", lat: 51.6473, lng: 5.0505,
-      beschrijving: "Aanschouw, dappere reizigers! Een bloeddorstige draak teistert het koninkrijk...", duur: "2 min", feitjes: ["Zet je schrap! Jullie houten strijdwagen bereikt een topsnelheid van 75 km/u."] },
-    { id: 2, name: "Symbolica", wait: 0, status: "Open", rijk: "Fantasierijk", img: "symbolica.png", lat: 51.6496, lng: 5.0438,
-      beschrijving: "Welkom, edele gasten! Treed binnen in het fonkelende Paleis der Fantasie...", duur: "7 min", feitjes: ["Met een prijskaartje van €35 miljoen is dit de duurste attractie ooit gebouwd in de Efteling."] },
-    { id: 3, name: "Droomvlucht", wait: 0, status: "Open", rijk: "Marerijk", img: "droomvlucht.png", lat: 51.6521, lng: 5.0416,
-      beschrijving: "Sluit je ogen, droom zacht, en ontwaak in een wereld waar wonderen werkelijkheid zijn...", duur: "6 min", feitjes: ["In het mysterieuze Zompenwoud regent het echt."] },
-    { id: 4, name: "Danse Macabre", wait: 0, status: "Open", rijk: "Anderrijk", img: "danse-macabre.png", lat: 51.6485, lng: 5.0417,
-      beschrijving: "Wees gewaarschuwd, stervelingen... Hier weerklinkt een ijzingwekkend koor...", duur: "3 min", feitjes: ["Deze duistere attractie is gebouwd op de heilige grond van het oude Spookslot."] },
-    { id: 5, name: "Python", wait: 0, status: "Open", rijk: "Ruigrijk", img: "python.png", lat: 51.6470, lng: 5.0520,
-      beschrijving: "Kijk omhoog en huiver! Een gigantische stalen slang kronkelt door de bossen...", duur: "2 min", feitjes: ["Toen de Python in 1981 opende, was het de grootste achtbaan van Europa."] },
-    { id: 6, name: "Vogel Rok", wait: 0, status: "Open", rijk: "Reizenrijk", img: "vogel-rok.png", lat: 51.6508, lng: 5.0475,
-      beschrijving: "Treed binnen in het domein van Sindbad de Zeeman en sta oog in oog met Vogel Rok...", duur: "1,5 min", feitjes: ["Het standbeeld bij de ingang is volgens het Guinness Book de grootste vogel van Europa."] },
-    { id: 7, name: "Baron 1898", wait: 0, status: "Onderhoud", rijk: "Ruigrijk", img: "baron-1898.png", lat: 51.6478, lng: 5.0487,
-      beschrijving: "Kompels gezocht! Hoogmoedige mijnbaron Gustave Hooghmoed heeft goud gevonden...", duur: "2 min", feitjes: ["Tijdens de vrije val stort je maar liefst 37,5 meter verticaal naar beneden."] },
-    { id: 8, name: "De Vliegende Hollander", wait: 0, status: "Onderhoud", rijk: "Ruigrijk", img: "de-vliegende-hollander.png", lat: 51.6475, lng: 5.0494,
-      beschrijving: "De gierige kapitein Willem van der Decken bracht een eeuwige vloek over zijn schip...", duur: "3,5 min", feitjes: ["Het is een combinatie van een darkride, een achtbaan én een waterattractie."] },
-    { id: 9, name: "Sprookjesbos", wait: 0, status: "Open", rijk: "Marerijk", img: "sprookjesbos.png", lat: 51.6500, lng: 5.0400,
-      beschrijving: "Welkom in mijn betoverde bos, waar sprookjes voor eeuwig voortleven...", duur: "Zelf bepalen", feitjes: ["Dit is waar het allemaal begon: het bos opende in 1952 met slechts 10 sprookjes."] },
-    { id: 10, name: "Carnaval Festival", wait: 0, status: "Open", rijk: "Reizenrijk", img: "carnaval-festival.png", lat: 51.6510, lng: 5.0485,
-      beschrijving: "Reis in slechts een paar minuten de hele wereld rond! Neem plaats in een vrolijk karretje...", duur: "8 min", feitjes: ["Het extreem herkenbare deuntje is geschreven door Toon Hermans."] },
-    { id: 11, name: "Monorail", wait: 0, status: "Open", rijk: "Reizenrijk", img: "monorail.png", lat: 51.6505, lng: 5.0480,
-      beschrijving: "Stap in de charmante, kruipende slakkentreintjes en zweef kalmpjes over het Volk van Laaf...", duur: "12 min", feitjes: ["Elke houten slak waar je in zit heeft een eigen, uniek serienummer op zijn huisje."] },
-    { id: 12, name: "Fata Morgana", wait: 0, status: "Open", rijk: "Anderrijk", img: "fata-morgana.png", lat: 51.6476, lng: 5.0440,
-      beschrijving: "Vaar mee naar de Verboden Stad uit de legendarische vertellingen van 1001 Nacht...", duur: "8 min", feitjes: ["De zware paleisdeuren openen puur door de waterstroming van jouw boot!"] },
-    { id: 13, name: "Gondoletta", wait: 0, status: "Open", rijk: "Reizenrijk", img: "gondoletta.png", lat: 51.6495, lng: 5.0465,
-      beschrijving: "Laat de drukte van het park even achter je. Neem plaats in een overdekt bootje...", duur: "20 min", feitjes: ["Dit systeem is oorspronkelijk aangelegd om de boten van Fata Morgana te testen!"] },
-    { id: 14, name: "Halve Maen", wait: 0, status: "Open", rijk: "Ruigrijk", img: "halve-maen.png", lat: 51.6482, lng: 5.0490,
-      beschrijving: "Kies het ruime sop en trotseer de golven! Dit machtige VOC-schip deinst niet terug...", duur: "3 min", feitjes: ["Op zijn hoogste punt zwaait dit schip naar een hoek van maar liefst 180 graden."] },
-    { id: 15, name: "Max & Moritz", wait: 0, status: "Open", rijk: "Anderrijk", img: "max-en-moritz.png", lat: 51.6488, lng: 5.0450,
-      beschrijving: "Die dekselse kwajongens Max en Moritz hebben weer snode plannen! Raas mee...", duur: "2 min", feitjes: ["Deze vrolijke dubbele achtbaan is gebouwd op de locatie van de oude Bobsleebaan."] },
-    { id: 16, name: "Pagode", wait: 0, status: "Open", rijk: "Reizenrijk", img: "pagode.png", lat: 51.6490, lng: 5.0460,
-      beschrijving: "Verhef jezelf boven de bomen en ontdek het park zoals de vogels dat doen...", duur: "5 min", feitjes: ["Tijdens de piek van de vlucht bevind je je maar liefst 45 meter boven de grond."] },
-    { id: 17, name: "Piraña", wait: 0, status: "Onderhoud", rijk: "Anderrijk", img: "pirana.png", lat: 51.6480, lng: 5.0460,
-      beschrijving: "Durf jij de wildwaterrivier te trotseren? Neem plaats in een dobberend vlot...", duur: "5 min", feitjes: ["Toen de Piraña opende in 1983, was het de eerste wildwaterbaan van dit type ter wereld."] },
-    { id: 18, name: "Stoomcarrousel", wait: 0, status: "Open", rijk: "Marerijk", img: "stoomcarrousel.png", lat: 51.6515, lng: 5.0425,
-      beschrijving: "Stap terug in de tijd in dit warme, rijkversierde paleis van spiegels en lichtjes...", duur: "2 min", feitjes: ["De Efteling kocht deze unieke 19e-eeuwse kermismolen op in 1955."] },
-    { id: 19, name: "Villa Volta", wait: 0, status: "Open", rijk: "Marerijk", img: "villa-volta.png", lat: 51.6525, lng: 5.0420,
-      beschrijving: "Treed binnen in het weelderige huis van Hugo van den Loonsche Duynen. Niets is wat het lijkt...", duur: "10 min", feitjes: ["Een geheim: jij gaat helemaal niet over de kop! Alleen de muren van de kamer draaien rond."] }
+    { 
+        id: 1, name: "Joris en de Draak", wait: 0, status: "Open", rijk: "Ruigrijk", img: "joris-en-de-draak.png", 
+        beschrijving: "Aanschouw, dappere reizigers! Een bloeddorstige draak teistert het koninkrijk. Treed in de voetsporen van de legendarische Joris en kies jullie strijdwagen van Water of Vuur. Alleen door dapper samen te werken en genadeloos door de houten bochten te razen, kunnen jullie het beest verslaan en als ware helden triomferen!", 
+        duur: "2 min", 
+        feitjes: [
+            "Zet je schrap! Jullie houten strijdwagen bereikt een duizelingwekkende topsnelheid van maar liefst 75 kilometer per uur.", 
+            "Let goed op: de banen van Water en Vuur zijn niet exact hetzelfde, maar kruisen elkaar op spectaculaire wijze gedurende de rit.", 
+            "Voor de bouw van deze gigantische constructie zijn ruim 100.000 stalen bouten gebruikt om het hout te temmen."
+        ] 
+    },
+    { 
+        id: 2, name: "Symbolica", wait: 0, status: "Open", rijk: "Fantasierijk", img: "symbolica.png", 
+        beschrijving: "Welkom, edele gasten! Treed binnen in het fonkelende Paleis der Fantasie. De vrolijke nar Pardoes nodigt jullie uit voor een geheime audiëntie bij koning Pardulfus. Neem plaats in een magisch, ronddraaiend voertuig en laat je meevoeren door verborgen kamers vol glinsterende schatten, heldhaftige verhalen en wonderlijke muziek.", 
+        duur: "7 min", 
+        feitjes: [
+            "Aan het begin van de rit mag je zelf kiezen of je de Schattentour, Heldentour of Muziektour wilt beleven. Elke route toont andere geheimen!", 
+            "Met een prijskaartje van €35 miljoen is dit de allerduurste attractie die de Efteling ooit heeft gebouwd.", 
+            "Kijk goed om je heen in het paleis; veel van de magische effecten werken geheel zonder zichtbare rails op de vloer."
+        ] 
+    },
+    { 
+        id: 3, name: "Droomvlucht", wait: 0, status: "Open", rijk: "Marerijk", img: "droomvlucht.png", 
+        beschrijving: "Sluit je ogen, droom zacht, en ontwaak in een wereld waar wonderen werkelijkheid zijn. Zweef in een zacht gondeltje door weelderige bossen waar elfen dansen, trollen stoeien in de modder en kastelen gewichtloos door de nachtelijke hemel zweven. Een reis die de ziel betovert.", 
+        duur: "6 min", 
+        feitjes: [
+            "De geur van frisse dennenbomen en zoete bloemen die je ruikt, is echt! Er zijn speciale geurmachines verstopt in de scènes.", 
+            "In het mysterieuze Zompenwoud regent het echt. Miljoenen druppeltjes vallen daar onafgebroken naar beneden.", 
+            "De indrukwekkende sterrenhemel aan het einde van de rit wordt gevormd door meer dan een miljoen piepkleine lichtpuntjes."
+        ] 
+    },
+    { 
+        id: 4, name: "Danse Macabre", wait: 0, status: "Open", rijk: "Anderrijk", img: "danse-macabre.png", 
+        beschrijving: "Wees gewaarschuwd, stervelingen... Hier, op de ruïnes van een verlaten abdij, weerklinkt een ijzingwekkend koor. Neem plaats in de immense koorbanken en geef je over aan de macabere wals. De geesten ontwaken en sleuren je mee in een razende, bovennatuurlijke dans die je nooit meer zult vergeten.", 
+        duur: "3 min", 
+        feitjes: [
+            "Deze duistere attractie is gebouwd op de heilige grond van het oude, legendarische Spookslot.", 
+            "Je neemt plaats op een gigantisch, draaiend platform dat niet alleen roteert, maar ook onverwachts kantelt en zakt.", 
+            "De griezelige vioolmuziek die je hoort is het beroemde klassieke stuk 'Danse Macabre' van componist Camille Saint-Saëns."
+        ] 
+    },
+    { 
+        id: 5, name: "Python", wait: 0, status: "Open", rijk: "Ruigrijk", img: "python.png", 
+        beschrijving: "Kijk omhoog en huiver! Een gigantische stalen slang kronkelt door de bossen van het Ruigrijk. Ben jij dapper genoeg om de stalen buik van de Python te betreden? Maak je klaar voor een meedogenloze rit vol dubbele loopings en scherpe kurkentrekkers die je wereld volledig op zijn kop zetten.", 
+        duur: "2 min", 
+        feitjes: [
+            "Toen de Python in 1981 opende, was het de grootste en meest spectaculaire achtbaan van heel Europa.", 
+            "In 2018 werd de achtbaan bijna volledig gesloopt en stukje voor stukje weer opgebouwd met een soepelere baan.", 
+            "Al generaties lang is de Python de ultieme vuurdoop voor Efteling-bezoekers. Durf jij?"
+        ] 
+    },
+    { 
+        id: 6, name: "Vogel Rok", wait: 0, status: "Open", rijk: "Reizenrijk", img: "vogel-rok.png", 
+        beschrijving: "Treed binnen in het domein van Sindbad de Zeeman en sta oog in oog met de mythische Vogel Rok. Voordat je het weet, grijpt deze gigantische roofvogel jouw karretje vast met zijn vlijmscherpe klauwen en vlieg je met een rotvaart door het pikkedonker. Een duizelingwekkende vlucht langs slangen en stormen!", 
+        duur: "1,5 min", 
+        feitjes: [
+            "Het imposante standbeeld van de vogel bij de ingang is volgens het Guinness Book of Records de grootste vogel van Europa.", 
+            "Tijdens de donkere vlucht vlieg je met een snelheid van 65 kilometer per uur door de pikzwarte hallen.", 
+            "De meeslepende, bombastische orkestmuziek is speciaal voor de achtbaan gecomponeerd door Ruud Bos."
+        ] 
+    },
+    { 
+        id: 7, name: "Baron 1898", wait: 0, status: "Onderhoud", rijk: "Ruigrijk", img: "baron-1898.png", 
+        beschrijving: "Kompels gezocht! Hoogmoedige mijnbaron Gustave Hooghmoed heeft goud gevonden in de diepten van de aarde. Ondanks de waarschuwingen van de mysterieuze Witte Wieven, stuurt hij jou de mijnschacht in. Bereid je voor op een ijzingwekkende vrije val recht de donkere, mistige aarde in.", 
+        duur: "2 min", 
+        feitjes: [
+            "Tijdens de vrije val stort je maar liefst 37,5 meter verticaal naar beneden, een gat in de grond in.", 
+            "De massieve klok bovenaan de toren luidt daadwerkelijk iedere keer als er een treintje vol kompels vertrekt.", 
+            "Let op de prachtige details: het hele gebouw is ontworpen als een authentieke Nederlandse steenkolenmijn uit eind 19e eeuw."
+        ] 
+    },
+    { 
+        id: 8, name: "De Vliegende Hollander", wait: 0, status: "Onderhoud", rijk: "Ruigrijk", img: "de-vliegende-hollander.png", 
+        beschrijving: "De gierige kapitein Willem van der Decken trotseerde een zware storm op Paaszondag en bracht daarmee een eeuwige vloek over zijn schip. Stap aan boord van dit vervloekte schip in de zeventiende-eeuwse haven, vaar de donkere, mistige zeeholte in en ontsnap via een spectaculaire waterafdaling uit zijn klauwen!", 
+        duur: "3,5 min", 
+        feitjes: [
+            "De prachtige gevels in de wachtrij en haven zijn exacte kopieën van bestaande historische panden uit Nederlandse Hanzesteden.", 
+            "De huiveringwekkende mist in de donkere tunnel onderin het gebouw wordt gemaakt van ijskoud, verneveld water.", 
+            "Het is een combinatie van een darkride, een achtbaan én een waterattractie (een zogenaamde watercoaster)."
+        ] 
+    },
+    { 
+        id: 9, name: "Sprookjesbos", wait: 0, status: "Open", rijk: "Marerijk", img: "sprookjesbos.png", 
+        beschrijving: "Welkom in mijn betoverde bos, waar sprookjes voor eeuwig voortleven. Wandel over de slingerende zandpaden, luister naar de wind in de bladeren en ontdek de verhalen van Roodkapje, de sluwe wolf, de Dansende Schoentjes en Langnek. Neem de tijd, want in dit woud is magie overal te vinden.", 
+        duur: "Zelf bepalen", 
+        feitjes: [
+            "Dit is waar het allemaal begon: het bos opende op 31 mei 1952 met slechts 10 originele sprookjes.", 
+            "De legendarische illustrator Anton Pieck ontwierp de kenmerkende, romantische sfeer van het bos.", 
+            "Vroeger werden alle bewegende figuren in het bos bestuurd met behulp van ouderwetse, draaiende grammofoonplaten."
+        ] 
+    },
+    { 
+        id: 10, name: "Carnaval Festival", wait: 0, status: "Open", rijk: "Reizenrijk", img: "carnaval-festival.png", 
+        beschrijving: "Reis in slechts een paar minuten de hele wereld rond! Neem plaats in een vrolijk karretje en laat de immer lachende Jokie de Prrretneus je meenemen van de Nederlandse klederdracht tot aan de jungles van Afrika en de besneeuwde bergtoppen van de Alpen. Een feest van kleur en muziek!", 
+        duur: "8 min", 
+        feitjes: [
+            "Het extreem herkenbare (en aanstekelijke) deuntje is geschreven door de bekende cabaretier Toon Hermans.", 
+            "Tijdens deze overdekte reis passeer je meer dan 270 vrolijk bewegende en zingende poppen.", 
+            "In Japan bestaat een bijna identieke attractie die met de hulp van de Efteling is ontworpen."
+        ] 
+    },
+    { 
+        id: 11, name: "Monorail", wait: 0, status: "Open", rijk: "Reizenrijk", img: "monorail.png", 
+        beschrijving: "Stap in de charmante, kruipende slakkentreintjes en zweef kalmpjes over het Volk van Laaf. Vanuit de lucht krijg je een uniek, rustgevend panorama van de Efteling. Perfect om even de benen te laten rusten terwijl de wereld onder je door trekt.", 
+        duur: "12 min", 
+        feitjes: [
+            "Zin in actie? Je kunt zelf de pedalen gebruiken om je slak voort te bewegen, of gewoon ontspannen en hem het werk laten doen.", 
+            "Het biedt een van de mooiste fotomomenten om het Lavenlaar van bovenaf te bekijken.", 
+            "Let maar eens op: elke houten slak waar je in zit heeft een eigen, uniek serienummer op zijn huisje."
+        ] 
+    },
+    { 
+        id: 12, name: "Fata Morgana", wait: 0, status: "Open", rijk: "Anderrijk", img: "fata-morgana.png", 
+        beschrijving: "Vaar mee naar de Verboden Stad uit de legendarische vertellingen van 1001 Nacht. Jouw sloep glijdt door donkere oerwouden, bruisende Oosterse markten en zwaar bewaakte paleiskamers. Pas op voor de reusachtige Djinn en de slinkse krokodillen in het water!", 
+        duur: "8 min", 
+        feitjes: [
+            "Tijdens je mysterieuze boottocht kom je maar liefst meer dan 130 complexe, bewegende animatronics tegen.", 
+            "Let op de lucht: de jungle scène ruikt daadwerkelijk naar een vochtig, tropisch oerwoud door verborgen geurverspreiders.", 
+            "De zware paleisdeuren openen niet elektrisch; ze worden puur opengeduwd door de waterstroming van jouw naderende boot!"
+        ] 
+    },
+    { 
+        id: 13, name: "Gondoletta", wait: 0, status: "Open", rijk: "Reizenrijk", img: "gondoletta.png", 
+        beschrijving: "Laat de drukte van het park even achter je. Neem plaats in een overdekt bootje en dobber een kleine twintig minuten lang over de rimpelloze Siervijver. Geniet van de prachtige bloementuinen, kwakende eendjes en de betoverende achtergrondmuziek.", 
+        duur: "20 min", 
+        feitjes: [
+            "Geloof het of niet, dit systeem is oorspronkelijk aangelegd om de boten van Fata Morgana te testen!", 
+            "Het gigantische wiel dat alle boten onzichtbaar voortrekt, ligt stil en verborgen onder het wateroppervlak.", 
+            "Dit is veruit de populairste attractie om even een broodje te eten en de voeten rust te geven."
+        ] 
+    },
+    { 
+        id: 14, name: "Halve Maen", wait: 0, status: "Open", rijk: "Ruigrijk", img: "halve-maen.png", 
+        beschrijving: "Kies het ruime sop en trotseer de golven! Dit machtige VOC-schip deinst niet terug voor een storm. Krijg de kriebels in je buik wanneer dit kolossale schommelschip je metershoog de lucht in zwiept, om je vervolgens weer meedogenloos te laten vallen.", 
+        duur: "3 min", 
+        feitjes: [
+            "Toen hij werd gebouwd, stond de Halve Maen officieel in het Guinness Book of Records als grootste schommelschip ter wereld.", 
+            "Op zijn hoogste punt zwaait dit gigantische schip naar een hoek van maar liefst 180 graden.", 
+            "Ondanks zijn grootte wordt het hele schip aangedreven door één enkele, grote autoband onder de kiel!"
+        ] 
+    },
+    { 
+        id: 15, name: "Max & Moritz", wait: 0, status: "Open", rijk: "Anderrijk", img: "max-en-moritz.png", 
+        beschrijving: "Die dekselse kwajongens Max en Moritz hebben weer snode plannen! Neem plaats in hun zelfgebouwde zeepkisten en raas met een rotsnelheid door het dennenbos. Let goed op, want deze twee bengels halen allerlei streken uit tijdens jouw rit...", 
+        duur: "2 min", 
+        feitjes: [
+            "Deze vrolijke dubbele achtbaan is gebouwd op de exacte locatie van de legendarische Zwitserse Bobsleebaan.", 
+            "Omdat de rit zo kort is, maakt het treintje altijd standaard twéé rondes over de baan.", 
+            "Probeer maar eens op de 'scheetkussens' in de wachtrij te zitten... Ze produceren échte windgeluiden!"
+        ] 
+    },
+    { 
+        id: 16, name: "Pagode", wait: 0, status: "Open", rijk: "Reizenrijk", img: "pagode.png", 
+        beschrijving: "Verhef jezelf boven de bomen en ontdek het park zoals de vogels dat doen. Stap in deze schitterende Thaise tempel die traag en gracieus opstijgt naar grote hoogte. Terwijl hij rustig ronddraait, heb je een onbelemmerd, 360-graden uitzicht over het hele Rijk der Fantasie.", 
+        duur: "5 min", 
+        feitjes: [
+            "Tijdens de piek van de vlucht bevind je je maar liefst 45 meter boven de grond.", 
+            "De indrukwekkende en massieve hef-arm weegt een duizelingwekkende 225 ton.", 
+            "De techniek achter deze zwevende tempel komt direct uit de zware offshore kraan-industrie."
+        ] 
+    },
+    { 
+        id: 17, name: "Piraña", wait: 0, status: "Onderhoud", rijk: "Anderrijk", img: "pirana.png", 
+        beschrijving: "Durf jij de wildwaterrivier te trotseren? Neem plaats in een dobberend vlot en laat je meevoeren over de woeste stroomversnellingen van de Piraña. Langs oude Inca-tempels, gevaarlijke rotsen en spugende godenbeelden. Eén waarschuwing: je blijft niet droog!", 
+        duur: "5 min", 
+        feitjes: [
+            "Toen de Piraña opende in 1983, was het de allereerste wildwaterbaan van zijn soort in de hele wereld.", 
+            "Aan het einde van de rit wachten de watergoden Acolna en Chura om je nog één laatste, kletsnatte groet te brengen.", 
+            "De gigantische pompen verplaatsen samen maar liefst 3,5 miljoen liter kolkend water per uur."
+        ] 
+    },
+    { 
+        id: 18, name: "Stoomcarrousel", wait: 0, status: "Open", rijk: "Marerijk", img: "stoomcarrousel.png", 
+        beschrijving: "Stap terug in de tijd in dit warme, rijkversierde paleis van spiegels en lichtjes. Kies een prachtig uitgesneden paard of neem plaats in een sierlijk koetsje. De ronkende tonen van het authentieke orgel en het gedempte carrousel-licht zorgen voor pure, klassieke romantiek.", 
+        duur: "2 min", 
+        feitjes: [
+            "De Efteling bouwde de molen niet zelf, maar kocht deze unieke 19e-eeuwse kermismolen op in 1955.", 
+            "De schitterende, nostalgische muziek komt uit een écht en origineel Gavioli-draaiorgel.", 
+            "Voordat hij een vaste plek in het park kreeg, trok deze carrousel jarenlang over kermissen door heel Nederland."
+        ] 
+    },
+    { 
+        id: 19, name: "Villa Volta", wait: 0, status: "Open", rijk: "Marerijk", img: "villa-volta.png", 
+        beschrijving: "Treed binnen in het weelderige huis van Hugo van den Loonsche Duynen. Maar wees op je hoede! Ooit plunderde hij als leider van de wrede Bokkenrijders een abdij en haalde een gruwelijke vloek op zijn hals. Niets is meer wat het lijkt: onder en boven versmelten in een duizelingwekkende illusie.", 
+        duur: "10 min", 
+        feitjes: [
+            "Villa Volta opende in 1996 en was hiermee officieel het allereerste moderne 'Madhouse' ter wereld.", 
+            "Hugo, de vloek en de Bokkenrijders zijn gebaseerd op een bestaande en donkere 18e-eeuwse Brabantse sage.", 
+            "Een geheim: jij gaat helemaal niet over de kop! Alleen de muren van de kamer draaien rond, jouw bank schommelt slechts."
+        ] 
+    }
 ];
 
+// --- DATA: SPROOKJES ---
 const masterSprookjes = [
     { id: "sp1", naam: "Doornroosje", wandelTijdVanafVorig: 0 },
     { id: "sp2", naam: "Kabouterdorp", wandelTijdVanafVorig: 3 },
@@ -76,12 +229,6 @@ let prioriteiten = JSON.parse(localStorage.getItem('eftelingPrio')) || {};
 let voltooid = new Set(JSON.parse(localStorage.getItem('eftelingVoltooid')) || []);
 let activeView = localStorage.getItem('eftelingView') || 'attracties';
 let selectedSprookjes = JSON.parse(localStorage.getItem('eftelingSprookjes')) || ["sp1", "sp2", "sp3", "sp4", "sp5", "sp11", "sp18"];
-let currentRouteLijst = []; // Voor de Leaflet map
-
-// --- MAP VARIABELEN ---
-let map = null;
-let markerLayer = null;
-let routePolylineLayer = null;
 
 function save() {
     localStorage.setItem('eftelingPrio', JSON.stringify(prioriteiten));
@@ -231,7 +378,7 @@ function switchView(v) {
     window.scrollTo(0,0);
 }
 
-// --- ALGORITME & KAART INTEGRATIE ---
+// --- ALGORITME ---
 function getVerwachteWachtVoorTijd(attractie, uur) {
     let base = basisWachttijden[attractie.id] || 20;
     let factor = 1.0;
@@ -245,78 +392,13 @@ function getVerwachteWachtVoorTijd(attractie, uur) {
     return base * factor;
 }
 
-function toggleRouteKaart() {
-    const wrap = document.getElementById('route-map-wrapper');
-    if (wrap.style.display === 'none') {
-        wrap.style.display = 'block';
-        if (!map) {
-            // Initialiseer Leaflet kaart gecentreerd op de Efteling
-            map = L.map('leaflet-map').setView([51.649, 5.043], 15);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap',
-                maxZoom: 19
-            }).addTo(map);
-            markerLayer = L.layerGroup().addTo(map);
-        }
-        map.invalidateSize(); 
-        updateMapRoute(); 
-    } else {
-        wrap.style.display = 'none';
-    }
-}
-
-function updateMapRoute() {
-    if (!map || currentRouteLijst.length === 0) return;
-    
-    markerLayer.clearLayers();
-    if (routePolylineLayer) map.removeLayer(routePolylineLayer);
-
-    let coordsStringArray = [];
-    
-    let customIcon = L.icon({
-        iconUrl: 'icon-locatie.png',
-        iconSize: [28, 28],
-        iconAnchor: [14, 28],
-        popupAnchor: [0, -28]
-    });
-
-    currentRouteLijst.forEach((a, index) => {
-        if (a.lat && a.lng) {
-            L.marker([a.lat, a.lng], {icon: customIcon})
-             .bindPopup(`<b>${index + 1}. ${a.name}</b>`)
-             .addTo(markerLayer);
-            
-            // OSRM verwacht format: longitude,latitude
-            coordsStringArray.push(`${a.lng},${a.lat}`);
-        }
-    });
-
-    // Haal de fysieke looproute op via OSRM OpenStreetMap Routing API
-    if (coordsStringArray.length > 1) {
-        let osrmUrl = `https://router.project-osrm.org/route/v1/foot/${coordsStringArray.join(';')}?overview=full&geometries=geojson`;
-        fetch(osrmUrl)
-            .then(res => res.json())
-            .then(data => {
-                if (data.routes && data.routes.length > 0) {
-                    routePolylineLayer = L.geoJSON(data.routes[0].geometry, {
-                        style: { color: '#001a33', weight: 4, opacity: 0.8, dashArray: '6, 8' }
-                    }).addTo(map);
-                    map.fitBounds(routePolylineLayer.getBounds(), {padding: [20, 20]});
-                }
-            })
-            .catch(err => console.error("Fout bij ophalen OSRM route:", err));
-    } else if (coordsStringArray.length === 1) {
-        map.setView([currentRouteLijst[0].lat, currentRouteLijst[0].lng], 16);
-    }
-}
-
 function berekenOptimalePlan(switchAfter = true) {
     let lijst = attractieData.filter(a => prioriteiten[a.id] > 0 && a.status === "Open" && !voltooid.has(a.id));
-    
     if (lijst.length === 0 && switchAfter) return alert("Kies eerst attracties uit de lijst!");
 
     if (lijst.length > 0) {
         let nuUur = new Date().getHours();
+        
         let lastVoltooidId = Array.from(voltooid).pop();
         let huidigRijk = lastVoltooidId ? attractieData.find(a => a.id === lastVoltooidId)?.rijk : "Ingang";
 
@@ -360,12 +442,6 @@ function berekenOptimalePlan(switchAfter = true) {
 
         lijst.sort((a,b) => b.smartScore - a.smartScore);
         
-        // Sla de lijst op voor de kaart update
-        currentRouteLijst = lijst;
-        if(document.getElementById('route-map-wrapper').style.display === 'block') {
-            updateMapRoute();
-        }
-        
         const top = lijst[0];
         let wHtml = top.id === 9 ? `<div style="font-size:22px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">Geniet van het groen</div>` : `<div style="font-size:28px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">${top.wait} MIN</div>`;
         let tagHtml = top.waarom ? `<div class="smart-tag"><img src="icon-feitje.png" class="fact-icon" alt="Feitje">${top.waarom}</div>` : '';
@@ -389,8 +465,6 @@ function berekenOptimalePlan(switchAfter = true) {
                 </div>
             </div>`).join('');
     } else {
-        currentRouteLijst = [];
-        if(map) { markerLayer.clearLayers(); if (routePolylineLayer) map.removeLayer(routePolylineLayer); }
         document.getElementById('next-step-container').innerHTML = `<div class="plan-header-card"><div class="top-attraction-name">Alles bezocht!</div><p style="font-weight:700; color:#888;">Tijd voor een snack.</p></div>`;
         document.getElementById('route-container').innerHTML = "";
     }
@@ -445,22 +519,35 @@ function openSprookjesModal() {
     document.getElementById('sprookjes-modal').style.display = "flex";
 }
 
-function closeSprookjesModal() { document.getElementById('sprookjes-modal').style.display = "none"; }
+function closeSprookjesModal() { 
+    document.getElementById('sprookjes-modal').style.display = "none"; 
+}
+
 function saveSprookjes() {
     selectedSprookjes = Array.from(document.querySelectorAll('#modal-list input[type="checkbox"]:checked')).map(cb => cb.value);
-    save(); closeSprookjesModal(); toonSprookjes();
+    save(); 
+    closeSprookjesModal(); 
+    toonSprookjes();
 }
-function resetData() { if(confirm("Weet je het zeker? Alles wordt gewist.")) { localStorage.clear(); location.reload(); } }
+
+function resetData() { 
+    if(confirm("Weet je het zeker? Alles wordt gewist.")) { 
+        localStorage.clear(); 
+        location.reload(); 
+    } 
+}
 
 // --- ATTRACTIE MODAL FUNCTIES ---
 function openAttractieModal(id) {
     const attr = attractieData.find(a => a.id === id);
     if (!attr) return;
+
     document.getElementById('attractie-modal-img').style.backgroundImage = `url('${attr.img}')`;
     document.getElementById('attractie-modal-title').innerText = attr.name;
     document.getElementById('attractie-modal-rijk').innerHTML = `<img src="icon-locatie.png" class="stat-icon" alt="Locatie"> ${attr.rijk}`;
     document.getElementById('attractie-modal-duur').innerHTML = `<img src="icon-tijd.png" class="stat-icon" alt="Tijd"> ${attr.duur || 'Onbekend'}`;
     document.getElementById('attractie-modal-desc').innerText = attr.beschrijving || '';
+
     if (attr.feitjes && attr.feitjes.length > 0) {
         const randomFeitje = attr.feitjes[Math.floor(Math.random() * attr.feitjes.length)];
         document.getElementById('attractie-modal-fact').innerText = randomFeitje;
@@ -468,6 +555,7 @@ function openAttractieModal(id) {
     } else {
         document.getElementById('attractie-fact-box').style.display = 'none';
     }
+
     document.getElementById('attractie-modal').style.display = 'flex';
 }
 
@@ -487,9 +575,11 @@ window.onload = () => {
 
     updateWeather(); 
     updateWachttijden(); 
+    
     setInterval(updateWachttijden, 60000); 
     setInterval(updateWeather, 1800000); 
 
+    // Verwijder splash screen soepel na 1.2 seconden
     setTimeout(() => {
         const splash = document.getElementById('splash-screen');
         if (splash) {

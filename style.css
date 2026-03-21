@@ -229,23 +229,6 @@ h1, h2, h3, .top-attraction-name {
     border: 1px solid #c8e6c9;
 }
 
-/* --- INTERACTIEVE KAART (LEAFLET) --- */
-#leaflet-map {
-    height: 350px;
-    width: 100%;
-    border-radius: 15px;
-    border: 2px solid var(--efteling-gold);
-    z-index: 10;
-}
-.leaflet-popup-content-wrapper {
-    border-radius: 12px;
-    font-family: 'Nunito', sans-serif;
-}
-.leaflet-popup-content b {
-    color: var(--efteling-blue);
-    font-size: 15px;
-}
-
 /* --- BOTTOM NAVIGATIE --- */
 .bottom-nav { 
     position: fixed; 
