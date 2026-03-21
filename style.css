@@ -83,8 +83,8 @@ h1, h2, h3, .top-attraction-name {
 .card.te-laat { opacity: 0.45; filter: grayscale(80%); }
 
 .upside-down .card-img, .upside-down .wait-badge, .upside-down .star-icon { transform: rotate(180deg); transform-origin: center center; }
-.upside-down h3, .upside-down p.rijk-tekst { transform: rotate(180deg); transform-origin: center center; align-self: flex-start; }
-.upside-down p.rijk-tekst { margin: 0 0 2px 0; }
+.upside-down h3 { transform: rotate(180deg); transform-origin: center center; align-self: flex-start; padding-right: 0; padding-left: 40px; }
+.upside-down p.rijk-tekst { transform: rotate(180deg); transform-origin: center center; align-self: flex-start; margin: 0 0 2px 0; }
 
 .card-img { width: 115px; flex-shrink: 0; align-self: stretch; min-height: 95px; border-radius: 16px 0 0 16px; background-color: #e0e0e0; background-size: cover; background-position: center; background-repeat: no-repeat; cursor: pointer; }
 .card-content { padding: 12px 14px; flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative;}
