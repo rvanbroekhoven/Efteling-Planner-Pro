@@ -45,7 +45,6 @@ h1, h2, h3, .top-attraction-name {
 .view-intro { padding: 25px 30px 10px; text-align: center; }
 .view-intro p { margin: 0; font-size: 16px; color: #555; line-height: 1.4; font-weight: 600;}
 
-/* Categorie Filters */
 .category-filters {
     display: flex;
     gap: 10px;
@@ -76,22 +75,25 @@ h1, h2, h3, .top-attraction-name {
 
 .divider { width: 85%; text-align: center; border-bottom: 1px solid #ddd; line-height: 0.1em; margin: 30px auto 25px auto; }
 .divider span { background: var(--efteling-bg); padding: 0 15px; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; }
+.divider.warning { border-color: var(--live-red); margin-top: 40px;}
+.divider.warning span { color: var(--live-red); }
 
 .card { background: white; margin: 8px 10px; border-radius: 16px; display: flex; box-shadow: 0 4px 12px rgba(0,0,0,0.04); position: relative; transition: filter 0.3s ease; }
 .card.onderhoud { filter: grayscale(100%); opacity: 0.55; }
+.card.te-laat { opacity: 0.45; filter: grayscale(80%); }
 
 .upside-down .card-img, .upside-down .wait-badge, .upside-down .star-icon { transform: rotate(180deg); transform-origin: center center; }
 .upside-down h3, .upside-down p.rijk-tekst { transform: rotate(180deg); transform-origin: center center; align-self: flex-start; }
 .upside-down p.rijk-tekst { margin: 0 0 2px 0; }
 
 .card-img { width: 115px; flex-shrink: 0; align-self: stretch; min-height: 95px; border-radius: 16px 0 0 16px; background-color: #e0e0e0; background-size: cover; background-position: center; background-repeat: no-repeat; cursor: pointer; }
-.card-content { padding: 12px 14px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
-.card-content h3 { margin: 0; font-size: 17px; color: var(--efteling-blue); cursor: pointer; display: inline-block; }
+.card-content { padding: 12px 14px; flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative;}
+.card-content h3 { margin: 0; font-size: 17px; color: var(--efteling-blue); cursor: pointer; display: inline-block; padding-right: 40px; }
 .card-content p.rijk-tekst { margin: 2px 0 0 0; font-size: 11px; color: #666; font-weight: 700;}
 
 .wait-badge { position: absolute; top: 10px; right: 10px; background: var(--efteling-gold); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; z-index: 2; }
+.timeline-time { position: absolute; bottom: 12px; right: 12px; font-size: 12px; font-weight: 800; color: var(--efteling-blue); background: #f0f0f0; padding: 3px 8px; border-radius: 6px;}
 
-/* Custom Icons Setup met object-fit ter preventie van uitrekken */
 .star-rating { display: flex; gap: 12px; margin-top: 10px; }
 .star-icon { width: 24px; height: 24px; cursor: pointer; transition: transform 0.1s; background-size: contain; background-position: center; background-repeat: no-repeat; display: inline-block; }
 .star-icon:active { transform: scale(1.2); }
@@ -102,15 +104,13 @@ h1, h2, h3, .top-attraction-name {
 .fact-icon { width: 16px; height: 16px; vertical-align: middle; margin-right: 4px; margin-top: -2px; object-fit: contain; }
 .walk-icon { width: 14px; height: 14px; vertical-align: middle; margin-right: 4px; margin-top: -2px; object-fit: contain; }
 
-/* Dagplan & AI Smart Tag */
 .plan-header-card { background: white; width: 80%; padding: 35px 25px; border-radius: 25px; text-align: center; border: 2px solid var(--efteling-gold); box-shadow: 0 10px 30px rgba(175,148,79,0.15); margin: 25px auto; position: relative; }
 .plan-header-card .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--efteling-gold); color: white; padding: 6px 18px; border-radius: 20px; font-size: 12px; font-weight: 800; letter-spacing: 1px; }
 .top-attraction-name { font-size: 26px; color: var(--efteling-blue); margin: 10px 0; }
 .done-btn { margin-top: 20px; background: #34c759; color: white; border: none; padding: 14px 25px; border-radius: 15px; font-weight: 800; font-size: 15px; width: 100%; font-family: 'Nunito', sans-serif;}
 .smart-tag { display: inline-block; background: #e8f5e9; color: var(--smart-green); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 800; margin-bottom: 10px; border: 1px solid #c8e6c9;}
 
-/* Smart Break Card */
-.smart-break-card { background: #fff8e1; border-left: 4px solid var(--efteling-gold); margin: 10px 15px 20px 15px; padding: 15px; border-radius: 0 12px 12px 0; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+.smart-break-card { background: #fff8e1; border-left: 4px solid var(--efteling-gold); margin: 15px; padding: 15px; border-radius: 0 12px 12px 0; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
 .smart-break-icon { width: 32px; height: 32px; object-fit: contain; flex-shrink: 0;}
 .smart-break-text h4 { margin: 0 0 4px 0; color: var(--efteling-gold); font-size: 15px; font-weight: 900;}
 .smart-break-text p { margin: 0; font-size: 12px; color: #555; font-weight: 600; line-height: 1.4;}

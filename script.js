@@ -64,6 +64,38 @@ function save() {
     localStorage.setItem('eftelingSprookjes', JSON.stringify(selectedSprookjes));
 }
 
+function formatTime(totalMinutes) {
+    let h = Math.floor(totalMinutes / 60) % 24;
+    let m = totalMinutes % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+}
+
+// Slim Kalender Algoritme: Bepaalt sluitingstijd op basis van datum/maand/weekend
+function bepaalSluitingsTijd() {
+    const nu = new Date();
+    const maand = nu.getMonth() + 1; // 1 = jan, 12 = dec
+    const dag = nu.getDay(); // 0 = zon, 6 = zat
+    const datum = nu.getDate();
+
+    let sluitingUur = 18; // Standaard doordeweeks (winter/laagseizoen)
+
+    // Zomer Efteling (Juli & Augustus)
+    if (maand === 7 || maand === 8) {
+        sluitingUur = 22;
+    } 
+    // Weekenden
+    else if (dag === 0 || dag === 6) {
+        sluitingUur = 19; // Standaard weekend sluitingstijd
+    }
+
+    // Vakanties benadering (Kerst/Mei vakantie)
+    if (maand === 12 && datum > 20) sluitingUur = 20; // Kerstvakantie
+    if (maand === 1 && datum < 8) sluitingUur = 20; // Kerstvakantie na oud&nieuw
+    if (maand === 5 && datum < 10) sluitingUur = 20; // Meivakantie
+
+    return sluitingUur;
+}
+
 async function updateWeather() {
     try {
         const response = await fetch(WEATHER_API);
@@ -191,31 +223,16 @@ function toonLijst() {
     });
 }
 
-function setPriority(id, val) { 
-    prioriteiten[id] = (prioriteiten[id] === val) ? 0 : val; 
-    voltooid.delete(id); 
-    save(); 
-    toonLijst(); 
-}
-
-function wisPrioriteiten() { 
-    if(confirm("Selectie wissen?")) { 
-        prioriteiten = {}; 
-        voltooid.clear(); 
-        save(); 
-        toonLijst(); 
-    } 
-}
+function setPriority(id, val) { prioriteiten[id] = (prioriteiten[id] === val) ? 0 : val; voltooid.delete(id); save(); toonLijst(); }
+function wisPrioriteiten() { if(confirm("Selectie wissen?")) { prioriteiten = {}; voltooid.clear(); save(); toonLijst(); } }
 
 function switchView(v) {
-    activeView = v; 
-    save();
+    activeView = v; save();
     ['attracties','plan','sprookjes'].forEach(id => document.getElementById(id+'-view').style.display = 'none');
     document.getElementById(v+'-view').style.display = 'block';
     
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('nav-' + v).classList.add('active');
-    
     document.getElementById('view-title').innerText = v === 'attracties' ? 'ATTRACTIES' : (v === 'plan' ? 'Jouw Dagplan' : 'Sprookjesbos');
     
     if (v === 'sprookjes') toonSprookjes();
@@ -226,13 +243,9 @@ function switchView(v) {
 function getVerwachteWachtVoorTijd(attractie, uur) {
     let base = basisWachttijden[attractie.id] || 20;
     let factor = 1.0;
-    if (uur < 12) { 
-        factor = (attractie.rijk === "Fantasierijk" || attractie.rijk === "Marerijk") ? 1.2 : 0.7; 
-    } else if (uur >= 12 && uur < 16) { 
-        factor = 1.4; 
-    } else { 
-        factor = (attractie.rijk === "Ruigrijk") ? 1.1 : 0.6; 
-    }
+    if (uur < 12) { factor = (attractie.rijk === "Fantasierijk" || attractie.rijk === "Marerijk") ? 1.2 : 0.7; } 
+    else if (uur >= 12 && uur < 16) { factor = 1.4; } 
+    else { factor = (attractie.rijk === "Ruigrijk") ? 1.1 : 0.6; }
     return base * factor;
 }
 
@@ -241,92 +254,131 @@ function berekenOptimalePlan(switchAfter = true) {
     if (lijst.length === 0 && switchAfter) return alert("Kies eerst attracties uit de lijst!");
 
     if (lijst.length > 0) {
-        let nuUur = new Date().getHours();
+        // Tijd Simulatie Variabelen
+        let nu = new Date();
+        let actueleMinuten = nu.getHours() * 60 + nu.getMinutes();
         
+        let sluitingUur = bepaalSluitingsTijd();
+        const sluitingMinuten = sluitingUur * 60; 
+        
+        let lunchGehad = false;
+        let snackGehad = false;
+        let sluitingGetoond = false;
+
         let lastVoltooidId = Array.from(voltooid).pop();
         let huidigRijk = lastVoltooidId ? attractieData.find(a => a.id === lastVoltooidId)?.rijk : "Ingang";
 
+        // Bereken basis score
         lijst.forEach(a => {
             let score = prioriteiten[a.id] * 20; 
-            let verwacht = getVerwachteWachtVoorTijd(a, nuUur);
+            let verwacht = getVerwachteWachtVoorTijd(a, nu.getHours());
             let wachtVerschil = verwacht - a.wait; 
-            
             score += (wachtVerschil * 1.5); 
             score -= (a.wait * 0.5); 
             a.waarom = "";
 
             if (huidigRijk === "Ingang") {
-                if (a.rijk === "Fantasierijk" || a.rijk === "Anderrijk") { 
-                    score += 30; a.waarom = "Dichtbij de ingang!"; 
-                } else if (wachtVerschil > 15) { 
-                    a.waarom = "Nu veel rustiger dan normaal!"; 
-                } else if (prioriteiten[a.id] === 5) { 
-                    a.waarom = "Jouw absolute top-prioriteit!"; 
-                } else { 
-                    a.waarom = "Logische start van je dag."; 
-                }
+                if (a.rijk === "Fantasierijk" || a.rijk === "Anderrijk") { score += 30; a.waarom = "Dichtbij de ingang!"; } 
+                else if (wachtVerschil > 15) { a.waarom = "Nu rustiger dan normaal!"; } 
+                else if (prioriteiten[a.id] === 5) { a.waarom = "Absolute top-prioriteit!"; } 
+                else { a.waarom = "Logische start."; }
             } else {
-                if (huidigRijk === a.rijk && a.id !== 9) { 
-                    score += 40; a.waarom = "Dichtbij je huidige locatie!"; 
-                } else if (wachtVerschil > 15) { 
-                    a.waarom = "Nu veel rustiger dan normaal!"; 
-                } else if (prioriteiten[a.id] === 5) { 
-                    a.waarom = "Jouw absolute top-prioriteit!"; 
-                } else { 
-                    a.waarom = "Past goed in je route."; 
-                }
+                if (huidigRijk === a.rijk && a.id !== 9) { score += 40; a.waarom = "Dichtbij je locatie!"; } 
+                else if (wachtVerschil > 15) { a.waarom = "Nu rustiger dan normaal!"; } 
+                else if (prioriteiten[a.id] === 5) { a.waarom = "Absolute top-prioriteit!"; } 
+                else { a.waarom = "Past goed in de route."; }
             }
-
-            if (a.id === 9) {
-                score = prioriteiten[a.id] * 15;
-                if (huidigRijk === "Marerijk") score += 50;
-            }
+            if (a.id === 9) { score = prioriteiten[a.id] * 15; if (huidigRijk === "Marerijk") score += 50; }
             a.smartScore = score;
         });
 
+        // Sorteer op score
         lijst.sort((a,b) => b.smartScore - a.smartScore);
         
-        const top = lijst[0];
-        
-        // Bereken geschatte wandeltijd voor de eerste suggestie
-        let wandelTijd = (huidigRijk === "Ingang" || huidigRijk !== top.rijk) ? "ca. 8 min lopen" : "ca. 3 min lopen";
+        // Tijdlijn Berekening
+        lijst.forEach((a, index) => {
+            let wandelTijd = (index === 0) ? ((huidigRijk === "Ingang" || huidigRijk !== a.rijk) ? 8 : 3) : ((lijst[index-1].rijk !== a.rijk) ? 8 : 3);
+            
+            // Loop route flags resetten
+            a.voegLunchToe = false;
+            a.voegSnackToe = false;
+            a.toonSluiting = false;
 
+            let aankomst = actueleMinuten + wandelTijd;
+            
+            // Controleer pauzes voor aankomst bij de volgende attractie
+            if (aankomst > 765 && aankomst < 840 && !lunchGehad) { // 12:45 - 14:00
+                actueleMinuten += 40; aankomst += 40; lunchGehad = true; a.voegLunchToe = true;
+            } else if (aankomst > 945 && aankomst < 1020 && !snackGehad) { // 15:45 - 17:00
+                actueleMinuten += 25; aankomst += 25; snackGehad = true; a.voegSnackToe = true;
+            }
+
+            let ritDuur = parseInt(a.duur) || 5;
+            let klaar = aankomst + a.wait + ritDuur;
+
+            a.aankomstTijd = formatTime(aankomst);
+            a.teLaat = aankomst >= sluitingMinuten;
+            if (a.teLaat && !sluitingGetoond) {
+                a.toonSluiting = true;
+                sluitingGetoond = true;
+            }
+
+            actueleMinuten = klaar;
+        });
+
+        // HTML Generatie
+        const top = lijst[0];
+        let wandelTijdStr = (huidigRijk === "Ingang" || huidigRijk !== top.rijk) ? "ca. 8 min lopen" : "ca. 3 min lopen";
         let wHtml = top.id === 9 ? `<div style="font-size:22px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">Geniet van het groen</div>` : `<div style="font-size:28px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">${top.wait} MIN</div>`;
         let tagHtml = top.waarom ? `<div class="smart-tag"><img src="icon-feitje.png" class="fact-icon" alt="Feitje">${top.waarom}</div>` : '';
 
+        // Waarschuwing als zelfs de EERSTE attractie te laat is (dynamisch uur tonen)
+        let topWarning = top.teLaat ? `<div class="divider warning" style="margin-top: 0; margin-bottom: 20px;"><span>Park sluit om ${sluitingUur}:00</span></div>` : '';
+
         document.getElementById('next-step-container').innerHTML = `
-            <div class="plan-header-card">
-                <span class="badge">NU DOEN</span>
+            ${topWarning}
+            <div class="plan-header-card" style="${top.teLaat ? 'opacity: 0.5; filter: grayscale(80%);' : ''}">
+                <span class="badge">NU DOEN • ${top.aankomstTijd}</span>
                 <div class="top-attraction-name">${top.name}</div>
                 ${tagHtml}${wHtml}
                 <p style="font-size:13px; font-weight:700; color:#888; margin-bottom:15px;">
-                    <img src="icon-wandelen.png" class="stat-icon" alt="Wandelen"> ${wandelTijd} • <img src="icon-locatie.png" class="stat-icon" alt="Locatie"> ${top.rijk}
+                    <img src="icon-wandelen.png" class="stat-icon" alt="Wandelen"> ${wandelTijdStr} • <img src="icon-locatie.png" class="stat-icon" alt="Locatie"> ${top.rijk}
                 </p>
                 <button onclick="markAsDone(${top.id})" class="done-btn">✓ Bezocht</button>
             </div>`;
             
         let routeHtml = '';
-        let breakAdded = false;
-
-        lijst.slice(1).forEach((a, index) => {
-            // Smart Break in de voorgestelde lijst tijdens lunchtijd (bij de 2e stap)
-            if ((nuUur === 12 || nuUur === 13) && index === 0 && !breakAdded) {
+        lijst.slice(1).forEach((a) => {
+            if (a.voegLunchToe) {
                 routeHtml += `
                 <div class="smart-break-card">
                     <img src="icon-pauze.png" class="smart-break-icon" alt="Pauze">
                     <div class="smart-break-text">
-                        <h4>Tijd voor een pauze?</h4>
-                        <p>Het is lunchtijd. Pak een momentje rust voordat je verder gaat!</p>
+                        <h4>Tijd voor lunch?</h4>
+                        <p>Het is tijd voor een pauze. Plan hier ca. 40 min voor in.</p>
                     </div>
                 </div>`;
-                breakAdded = true;
+            }
+            if (a.voegSnackToe) {
+                routeHtml += `
+                <div class="smart-break-card">
+                    <img src="icon-pauze.png" class="smart-break-icon" alt="Pauze">
+                    <div class="smart-break-text">
+                        <h4>Kleine versnapering</h4>
+                        <p>Pak een momentje rust en een snack. Plan ca. 25 min in.</p>
+                    </div>
+                </div>`;
+            }
+            if (a.toonSluiting) {
+                routeHtml += `<div class="divider warning"><span>Park sluit om ${sluitingUur}:00</span></div>`;
             }
 
             routeHtml += `
-                <div class="card" style="margin: 8px 15px; opacity:0.85; transform:scale(0.96)">
+                <div class="card ${a.teLaat ? 'te-laat' : ''}" style="margin: 8px 15px; transform:scale(0.96)">
                     <div class="card-content">
                         <h3>${a.name}</h3>
-                        <p style="margin:5px 0 0 0; color: #666; font-size: 13px; font-weight:700;">${a.id === 9 ? "Wandeling" : `Nu: ${a.wait} min`}</p>
+                        <p style="margin:5px 0 0 0; color: #666; font-size: 13px; font-weight:700;">${a.id === 9 ? "Wandeling" : `Wachttijd: ${a.wait} min`}</p>
+                        <div class="timeline-time">${a.aankomstTijd}</div>
                     </div>
                 </div>`;
         });
@@ -341,12 +393,7 @@ function berekenOptimalePlan(switchAfter = true) {
     if (switchAfter) switchView('plan');
 }
 
-function markAsDone(id) { 
-    voltooid.add(id); 
-    save(); 
-    berekenOptimalePlan(false); 
-    toonLijst(); 
-}
+function markAsDone(id) { voltooid.add(id); save(); berekenOptimalePlan(false); toonLijst(); }
 
 function toonSprookjes() {
     const c = document.getElementById('sprookjes-route-container');
@@ -355,8 +402,7 @@ function toonSprookjes() {
     masterSprookjes.forEach((s) => {
         accuWalk += s.wandelTijdVanafVorig; 
         if (selectedSprookjes.includes(s.id)) {
-            count++; 
-            totalTime += accuWalk;
+            count++; totalTime += accuWalk;
             html += `
                 <div class="route-step">
                     <div class="step-num">${count}</div>
@@ -387,23 +433,13 @@ function openSprookjesModal() {
     document.getElementById('sprookjes-modal').style.display = "flex";
 }
 
-function closeSprookjesModal() { 
-    document.getElementById('sprookjes-modal').style.display = "none"; 
-}
-
+function closeSprookjesModal() { document.getElementById('sprookjes-modal').style.display = "none"; }
 function saveSprookjes() {
     selectedSprookjes = Array.from(document.querySelectorAll('#modal-list input[type="checkbox"]:checked')).map(cb => cb.value);
-    save(); 
-    closeSprookjesModal(); 
-    toonSprookjes();
+    save(); closeSprookjesModal(); toonSprookjes();
 }
 
-function resetData() { 
-    if(confirm("Weet je het zeker? Alles wordt gewist.")) { 
-        localStorage.clear(); 
-        location.reload(); 
-    } 
-}
+function resetData() { if(confirm("Weet je het zeker? Alles wordt gewist.")) { localStorage.clear(); location.reload(); } }
 
 function openAttractieModal(id) {
     const attr = attractieData.find(a => a.id === id);
