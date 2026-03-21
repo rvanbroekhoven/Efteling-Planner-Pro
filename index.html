@@ -40,6 +40,15 @@
                     Selectie wissen
                 </button>
             </div>
+            
+            <div class="category-filters">
+                <button class="cat-pill active" id="filter-alle" onclick="setCategory('alle')">Alle</button>
+                <button class="cat-pill" id="filter-achtbaan" onclick="setCategory('achtbaan')">Achtbanen</button>
+                <button class="cat-pill" id="filter-familie" onclick="setCategory('familie')">Familie</button>
+                <button class="cat-pill" id="filter-binnen" onclick="setCategory('binnen')">Binnen</button>
+                <button class="cat-pill" id="filter-buiten" onclick="setCategory('buiten')">Buiten</button>
+            </div>
+
             <div id="rollercoasters-container"></div>
             <div class="sticky-footer">
                 <button onclick="berekenOptimalePlan()" class="plan-btn">Magische Route Berekenen</button>
