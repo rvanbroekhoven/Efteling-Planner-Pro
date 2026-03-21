@@ -98,9 +98,52 @@ h1, h2, h3, .top-attraction-name { font-family: 'Nunito', sans-serif; font-weigh
 .sprookje-label { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; font-weight: 700; color: #333; font-size: 15px;}
 .sprookje-label input { margin-right: 15px; transform: scale(1.3); accent-color: var(--efteling-gold); }
 
-#splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--efteling-blue); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; color: var(--efteling-gold); transition: opacity 0.4s ease-out, visibility 0.4s ease-out; }
+/* --- AANGEPASTE SPLASH SCREEN ANIMATIES VOOR GROOT LOGO ACHTER TEKST --- */
+#splash-screen { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background-color: var(--efteling-blue); 
+    display: flex; flex-direction: column; justify-content: center; align-items: center; 
+    z-index: 9999; color: var(--efteling-gold); 
+    transition: opacity 0.4s ease-out, visibility 0.4s ease-out; 
+    overflow: hidden; /* Zorg dat de overlappende afbeelding geen scrollbar veroorzaakt */
+}
 #splash-screen.hidden { opacity: 0; visibility: hidden; }
-.splash-logo { width: 120px; height: auto; animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; object-fit: contain; }
-.splash-text { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 22px; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase; opacity: 0; animation: fadeInUp 0.5s ease-out 0.3s forwards; color: white; }
+
+/* Wrapper voor de grote achtergrond-afbeelding met de animatie */
+.splash-logo-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 0; /* Positioneer wrapper vanaf de linkerkant */
+    width: 100%; /* Vul de volledige breedte */
+    height: 100%; /* Vul de volledige hoogte */
+    z-index: 1; /* Achter de tekst */
+    display: flex;
+    justify-content: center; /* Centreer de afbeelding horizontaal binnen de wrapper */
+    align-items: center; /* Centreer de afbeelding verticaal binnen de wrapper */
+    /* Pas de bestaande animatie toe op de wrapper */
+    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* De daadwerkelijke grote achtergrond-afbeelding */
+.splash-logo-bg { 
+    /* Formaat voor iPhone 12 schaling: 125% van viewport breedte */
+    width: 125vw; 
+    height: auto; 
+    /* Gebruikerseisen: doorzichtbaar en vervaagd */
+    opacity: 0.25; /* Circa partially transparent */
+    filter: blur(2px); /* Very light blur */
+    /* Zorg dat de afbeelding gecentreerd blijft binnen de wrapper en niet uitrekt */
+    object-fit: contain; 
+}
+
+.splash-text { 
+    font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 22px; 
+    margin-top: 15px; letter-spacing: 2px; text-transform: uppercase; 
+    opacity: 0; animation: fadeInUp 0.5s ease-out 0.3s forwards; 
+    color: white; /* Tekst blijft wit */
+    position: relative; /* Voor z-index werking */
+    z-index: 2; /* Voor de vervaagde afbeelding */
+}
+
 @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 @keyframes fadeInUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
