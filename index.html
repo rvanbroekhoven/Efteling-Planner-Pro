@@ -13,24 +13,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="splash-screen">
         <div class="splash-logo-wrapper">
-            <img src="splash-logo.png" class="splash-logo-bg" alt="Efteling Planner">
+            <img src="splash-logo.png" class="splash-logo-bg" alt="Efteling Logo">
         </div>
         <div class="splash-text">Efteling Planner</div>
     </div>
 
     <header class="app-header">
-        <div class="weather-widget" id="weather-info"><img src="weer-halfbewolkt.png" class="weather-icon"> --°C</div>
+        <div class="weather-widget" id="weather-info">
+            <img src="weer-halfbewolkt.png" class="weather-icon" alt="Weer"> --°C
+        </div>
         <h1 id="view-title">ATTRACTIES</h1>
         <div class="live-indicator" id="last-update">LADEN...</div>
     </header>
 
     <main id="app-content">
+        
         <section id="attracties-view">
             <div class="view-intro">
                 <p>Geef je prioriteiten aan voor een magische dag.</p>
@@ -64,17 +66,18 @@
             </div>
             <div id="sprookjes-route-container" class="route-list"></div>
         </section>
+
     </main>
 
     <div id="sprookjes-modal" class="modal">
         <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-                <h3 style="margin:0; color:var(--efteling-blue);">Welke sprookjes?</h3>
+            <div class="modal-header">
+                <h3 style="margin: 0; color: var(--efteling-blue);">Welke sprookjes?</h3>
                 <button onclick="closeSprookjesModal()" class="close-btn">×</button>
             </div>
-            <p style="font-size:13px; color:#666; margin-top:0;">Vink je favorieten aan. Wij stippelen de beste looproute uit.</p>
+            <p style="font-size: 13px; color: #666; margin-top: 0;">Vink je favorieten aan. Wij stippelen de beste looproute uit.</p>
             <div id="modal-list" style="max-height: 50vh; overflow-y: auto; margin-bottom: 20px;"></div>
-            <button onclick="saveSprookjes()" class="done-btn" style="margin:0;">Route Opslaan</button>
+            <button onclick="saveSprookjes()" class="done-btn" style="margin: 0;">Route Opslaan</button>
         </div>
     </div>
 
@@ -90,7 +93,7 @@
                 </div>
                 <p id="attractie-modal-desc" class="attractie-desc"></p>
                 <div id="attractie-fact-box" class="attractie-fact-box">
-                    <strong><img src="icon-feitje.png" class="fact-icon"> Wist je dat?</strong>
+                    <strong><img src="icon-feitje.png" class="fact-icon" alt="Feitje"> Wist je dat?</strong>
                     <p id="attractie-modal-fact" style="margin: 5px 0 0 0;"></p>
                 </div>
             </div>
@@ -99,13 +102,16 @@
 
     <nav class="bottom-nav">
         <div class="nav-item active" id="nav-attracties" onclick="switchView('attracties')">
-            <img src="nav-attracties.png" class="nav-icon-img"><span>Attracties</span>
+            <img src="nav-attracties.png" class="nav-icon-img" alt="Attracties">
+            <span>Attracties</span>
         </div>
         <div class="nav-item" id="nav-plan" onclick="switchView('plan')">
-            <img src="nav-dagplan.png" class="nav-icon-img"><span>Dagplan</span>
+            <img src="nav-dagplan.png" class="nav-icon-img" alt="Dagplan">
+            <span>Dagplan</span>
         </div>
         <div class="nav-item" id="nav-sprookjes" onclick="switchView('sprookjes')">
-            <img src="nav-bos.png" class="nav-icon-img"><span>Bos</span>
+            <img src="nav-bos.png" class="nav-icon-img" alt="Bos">
+            <span>Bos</span>
         </div>
     </nav>
 
