@@ -229,6 +229,23 @@ h1, h2, h3, .top-attraction-name {
     border: 1px solid #c8e6c9;
 }
 
+/* --- INTERACTIEVE KAART (LEAFLET) --- */
+#leaflet-map {
+    height: 350px;
+    width: 100%;
+    border-radius: 15px;
+    border: 2px solid var(--efteling-gold);
+    z-index: 10;
+}
+.leaflet-popup-content-wrapper {
+    border-radius: 12px;
+    font-family: 'Nunito', sans-serif;
+}
+.leaflet-popup-content b {
+    color: var(--efteling-blue);
+    font-size: 15px;
+}
+
 /* --- BOTTOM NAVIGATIE --- */
 .bottom-nav { 
     position: fixed; 
@@ -463,11 +480,11 @@ h1, h2, h3, .top-attraction-name {
 }
 
 .splash-logo-bg { 
-    width: 50vw; /* Teruggeschaald voor een professionele marge op iPhone 12 */
+    width: 50vw; 
     max-width: 200px;
     height: auto; 
-    opacity: 0.8; /* Duidelijk zichtbaar */
-    filter: blur(0.5px); /* Zeer licht vervaagd voor leesbaarheid tekst */
+    opacity: 0.8; 
+    filter: blur(0.5px); 
     object-fit: contain; 
     animation: popInBg 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
