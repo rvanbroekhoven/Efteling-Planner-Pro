@@ -59,8 +59,10 @@ const horecaData = {
     "Ingang": [{naam: "De Gebrande Boon", desc: "Verse koffie en ovenheerlijke broodjes om de dag te starten."}]
 };
 
+// GEFIXED: Forceer alle IDs vanuit opslag naar strikte nummers (type mismatch verhelpen)
 let prioriteiten = JSON.parse(localStorage.getItem('eftelingPrio')) || {};
-let voltooid = new Set(JSON.parse(localStorage.getItem('eftelingVoltooid')) || []);
+let voltooidArray = JSON.parse(localStorage.getItem('eftelingVoltooid')) || [];
+let voltooid = new Set(voltooidArray.map(id => parseInt(id, 10)));
 let activeView = localStorage.getItem('eftelingView') || 'attracties';
 let selectedSprookjes = JSON.parse(localStorage.getItem('eftelingSprookjes')) || ["sp1", "sp2", "sp3", "sp4", "sp5", "sp11", "sp18"];
 let lunchVoltooid = localStorage.getItem('eftelingLunch') === 'true';
@@ -112,7 +114,6 @@ function showToast(message) {
     const toast = document.getElementById('toast-container');
     document.getElementById('toast-message').innerText = message;
     toast.classList.add('show');
-    // Verblijft iets langer in beeld voor leesbaarheid
     setTimeout(() => { toast.classList.remove('show'); }, 6000);
 }
 
@@ -245,8 +246,22 @@ function toonLijst() {
     });
 }
 
-function setPriority(id, val) { prioriteiten[id] = (prioriteiten[id] === val) ? 0 : val; voltooid.delete(id); save(); toonLijst(); }
-function wisPrioriteiten() { if(confirm("Selectie wissen?")) { prioriteiten = {}; voltooid.clear(); save(); toonLijst(); } }
+function setPriority(id, val) { 
+    id = parseInt(id, 10); // Beveiliging type mismatch
+    prioriteiten[id] = (prioriteiten[id] === val) ? 0 : val; 
+    voltooid.delete(id); 
+    save(); 
+    toonLijst(); 
+}
+
+function wisPrioriteiten() { 
+    if(confirm("Selectie wissen?")) { 
+        prioriteiten = {}; 
+        voltooid.clear(); 
+        save(); 
+        toonLijst(); 
+    } 
+}
 
 function switchView(v) {
     activeView = v; save();
@@ -262,7 +277,17 @@ function switchView(v) {
     window.scrollTo(0,0);
 }
 
-function markBreakAsDone(type) {
+// GEFIXED: Forceer nummer-type + stop event propagatie
+function markAsDone(id, event) { 
+    if(event) event.stopPropagation();
+    voltooid.add(parseInt(id, 10)); 
+    save(); 
+    berekenOptimalePlan(false); 
+    toonLijst(); 
+}
+
+function markBreakAsDone(type, event) {
+    if(event) event.stopPropagation();
     if (type === 'lunch') lunchVoltooid = true;
     if (type === 'snack') snackVoltooid = true;
     save();
@@ -270,7 +295,9 @@ function markBreakAsDone(type) {
 }
 
 function berekenOptimalePlan(switchAfter = true) {
+    // Hier kijkt het algoritme of voltooid.has() true is. Dat werkt nu feilloos omdat beide nummers zijn.
     let ruweLijst = attractieData.filter(a => prioriteiten[a.id] > 0 && a.status === "Open" && !voltooid.has(a.id));
+    
     if (ruweLijst.length === 0 && switchAfter) return alert("Kies eerst attracties uit de lijst!");
 
     if (ruweLijst.length > 0) {
@@ -379,7 +406,7 @@ function berekenOptimalePlan(switchAfter = true) {
                 <button class="btn-horeca" onclick="openHorecaModal('${top.rijk}', '${top.type}')">
                     🍔 Horeca in de buurt bekijken
                 </button>
-                <button onclick="markBreakAsDone('${top.type}')" class="done-btn" style="background:var(--smart-green);">✓ Hervat Route</button>
+                <button onclick="markBreakAsDone('${top.type}', event)" class="done-btn" style="background:var(--smart-green);">✓ Hervat Route</button>
             </div>`;
         } else {
             let wHtml = top.id === 9 ? `<div style="font-size:22px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">Geniet van het groen</div>` : `<div style="font-size:28px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">${top.geplandeWacht} MIN</div>`;
@@ -395,7 +422,7 @@ function berekenOptimalePlan(switchAfter = true) {
                 <p style="font-size:13px; font-weight:700; color:#888; margin-bottom:15px;">
                     <img src="icon-wandelen.png" class="stat-icon" alt="Wandelen"> ${top.wandelTijdStr} • <img src="icon-locatie.png" class="stat-icon" alt="Locatie"> ${top.rijk}
                 </p>
-                <button onclick="markAsDone(${top.id})" class="done-btn">✓ Bezocht</button>
+                <button onclick="markAsDone(${top.id}, event)" class="done-btn">✓ Bezocht</button>
             </div>`;
         }
         

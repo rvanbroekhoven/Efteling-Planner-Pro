@@ -144,7 +144,7 @@ h1, h2, h3, .top-attraction-name {
 .plan-header-card { background: white; width: 82%; padding: 40px 25px 30px; border-radius: 25px; text-align: center; border: 2px solid var(--efteling-gold); box-shadow: 0 15px 35px rgba(175,148,79,0.12); margin: 30px auto; position: relative; transition: transform 0.2s ease;}
 .plan-header-card .badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--efteling-gold); color: white; padding: 6px 20px; border-radius: 20px; font-size: 13px; font-weight: 800; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(175,148,79,0.3);}
 .top-attraction-name { font-size: 26px; color: var(--efteling-blue); margin: 10px 0; line-height: 1.2; }
-.done-btn { margin-top: 20px; background: #34c759; color: white; border: none; padding: 15px 25px; border-radius: 16px; font-weight: 800; font-size: 15px; width: 100%; font-family: 'Nunito', sans-serif; box-shadow: 0 4px 12px rgba(52, 199, 89, 0.2); transition: transform 0.2s;}
+.done-btn { margin-top: 20px; background: #34c759; color: white; border: none; padding: 15px 25px; border-radius: 16px; font-weight: 800; font-size: 15px; width: 100%; font-family: 'Nunito', sans-serif; box-shadow: 0 4px 12px rgba(52, 199, 89, 0.2); transition: transform 0.2s; cursor: pointer; position: relative; z-index: 10;}
 .done-btn:active { transform: scale(0.96); }
 .smart-tag { display: inline-block; background: #e8f5e9; color: var(--smart-green); padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; margin-bottom: 12px; border: 1px solid #c8e6c9;}
 
