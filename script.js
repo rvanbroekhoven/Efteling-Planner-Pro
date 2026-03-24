@@ -50,7 +50,6 @@ const masterSprookjes = [
     { id: "sp18", naam: "Indische Waterlelies", wandelTijdVanafVorig: 3 }
 ];
 
-// Database voor de Horeca pop-up per Rijk
 const horecaData = {
     "Ruigrijk": [{naam: "Station de Oost", desc: "Friet, Oosterse snacks, belegde broodjes en verse sappen."}, {naam: "De Likkebaerd", desc: "Verse frites, snacks en verkoelend ijs."}],
     "Marerijk": [{naam: "Het Witte Paard", desc: "Koffie, gebak, belegde broodjes en warme seizoensgerechten."}, {naam: "'t Poffertje", desc: "Heerlijke verse, warme poffertjes volgens oud-Hollands recept."}],
@@ -67,7 +66,7 @@ let selectedSprookjes = JSON.parse(localStorage.getItem('eftelingSprookjes')) ||
 let lunchVoltooid = localStorage.getItem('eftelingLunch') === 'true';
 let snackVoltooid = localStorage.getItem('eftelingSnack') === 'true';
 let activeCategory = 'alle';
-let vorigeStatussen = {}; // Voor de Push-notificaties
+let vorigeStatussen = {}; 
 
 function save() {
     localStorage.setItem('eftelingPrio', JSON.stringify(prioriteiten));
@@ -109,12 +108,12 @@ function getVerwachteWachtVoorTijd(attractie, uur) {
     return base * factor;
 }
 
-// Push Notification functie
 function showToast(message) {
     const toast = document.getElementById('toast-container');
     document.getElementById('toast-message').innerText = message;
     toast.classList.add('show');
-    setTimeout(() => { toast.classList.remove('show'); }, 5000);
+    // Verblijft iets langer in beeld voor leesbaarheid
+    setTimeout(() => { toast.classList.remove('show'); }, 6000);
 }
 
 async function updateWeather() {
@@ -146,7 +145,7 @@ function genereerSimulatieTijden() {
             let random = Math.floor(Math.random() * 11) - 5; 
             a.wait = Math.round(Math.max(5, Math.round(rawWacht + random)) / 5) * 5; 
             a.status = "Open";
-            vorigeStatussen[a.id] = "Open"; // initieer state voor simulatie
+            vorigeStatussen[a.id] = "Open"; 
         }
     });
 }
@@ -173,11 +172,10 @@ async function updateWachttijden() {
                         match.wait = ride.wait_time; 
                         match.status = newStatus;
 
-                        // Check voor push notificatie
                         let prevStatus = vorigeStatussen[match.id];
                         if (prevStatus === "Open" && newStatus === "Gesloten") {
                             if (prioriteiten[match.id] > 0 && !voltooid.has(match.id)) {
-                                showToast(`Let op: ${match.name} is zojuist in storing gegaan. Je plan is bijgewerkt!`);
+                                showToast(`Let op: ${match.name} is in storing gegaan. Je route wordt aangepast!`);
                                 planAangepast = true;
                             }
                         }
@@ -286,7 +284,6 @@ function berekenOptimalePlan(switchAfter = true) {
         let lastVoltooidId = Array.from(voltooid).pop();
         let initieelRijk = lastVoltooidId ? attractieData.find(a => a.id === lastVoltooidId)?.rijk : "Ingang";
 
-        // Stap 1: Bepaal basis sortering
         ruweLijst.forEach(a => {
             let score = prioriteiten[a.id] * 20; 
             let verwacht = getVerwachteWachtVoorTijd(a, startUur);
@@ -312,11 +309,9 @@ function berekenOptimalePlan(switchAfter = true) {
 
         ruweLijst.sort((a,b) => b.smartScore - a.smartScore);
         
-        // Stap 2: Voorspellende Tijdlijn Berekening incl. Pauzes
         let planLijst = [];
         let huidigRijk = initieelRijk;
         let sluitingGetoond = false;
-        
         let localLunchGehad = lunchVoltooid;
         let localSnackGehad = snackVoltooid;
 
@@ -324,19 +319,17 @@ function berekenOptimalePlan(switchAfter = true) {
             let wandelTijd = (index === 0 && planLijst.length === 0) ? ((huidigRijk === "Ingang" || huidigRijk !== a.rijk) ? 8 : 3) : ((huidigRijk !== a.rijk) ? 8 : 3);
             let aankomst = actueleMinuten + wandelTijd;
             
-            // Check voor Lunch (tussen 12:45 en 14:00)
             if (aankomst > 765 && !localLunchGehad) { 
-                if (aankomst < 840) { // Alleen voorstellen als we nog binnen de tijd zitten
+                if (aankomst < 840) { 
                     planLijst.push({ 
                         isBreak: true, type: 'lunch', rijk: huidigRijk, aankomstTijd: formatTime(actueleMinuten), 
                         duur: 40, titel: "Tijd voor lunch?", desc: "Het is tijd voor een pauze. Plan hier ca. 40 min voor in." 
                     });
                     actueleMinuten += 40; aankomst += 40;
                 }
-                localLunchGehad = true; // Overslaan of gehad, in beide gevallen niet meer tonen vandaag
+                localLunchGehad = true; 
             } 
             
-            // Check voor Snack (tussen 15:45 en 17:00)
             if (aankomst > 945 && !localSnackGehad) { 
                 if (aankomst < 1020) {
                     planLijst.push({ 
@@ -374,7 +367,6 @@ function berekenOptimalePlan(switchAfter = true) {
             huidigRijk = a.rijk;
         });
 
-        // Stap 3: HTML Generatie vanuit de verenigde planLijst
         const top = planLijst[0];
         let topHtml = "";
         
