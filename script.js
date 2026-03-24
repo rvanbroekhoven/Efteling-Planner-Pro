@@ -59,14 +59,18 @@ const horecaData = {
     "Ingang": [{naam: "De Gebrande Boon", desc: "Verse koffie en ovenheerlijke broodjes om de dag te starten."}]
 };
 
-// GEFIXED: Forceer alle IDs vanuit opslag naar strikte nummers (type mismatch verhelpen)
+// State voor de nieuwe Pauze Opschuif functionaliteit
+let pauzeState = JSON.parse(localStorage.getItem('eftelingPauzes')) || {
+    koffie: { voltooid: false, uitgesteld: 0 },
+    lunch:  { voltooid: false, uitgesteld: 0 },
+    snack:  { voltooid: false, uitgesteld: 0 }
+};
+
 let prioriteiten = JSON.parse(localStorage.getItem('eftelingPrio')) || {};
 let voltooidArray = JSON.parse(localStorage.getItem('eftelingVoltooid')) || [];
 let voltooid = new Set(voltooidArray.map(id => parseInt(id, 10)));
 let activeView = localStorage.getItem('eftelingView') || 'attracties';
 let selectedSprookjes = JSON.parse(localStorage.getItem('eftelingSprookjes')) || ["sp1", "sp2", "sp3", "sp4", "sp5", "sp11", "sp18"];
-let lunchVoltooid = localStorage.getItem('eftelingLunch') === 'true';
-let snackVoltooid = localStorage.getItem('eftelingSnack') === 'true';
 let activeCategory = 'alle';
 let vorigeStatussen = {}; 
 
@@ -75,8 +79,7 @@ function save() {
     localStorage.setItem('eftelingVoltooid', JSON.stringify(Array.from(voltooid)));
     localStorage.setItem('eftelingView', activeView);
     localStorage.setItem('eftelingSprookjes', JSON.stringify(selectedSprookjes));
-    localStorage.setItem('eftelingLunch', lunchVoltooid);
-    localStorage.setItem('eftelingSnack', snackVoltooid);
+    localStorage.setItem('eftelingPauzes', JSON.stringify(pauzeState));
 }
 
 function formatTime(totalMinutes) {
@@ -163,7 +166,6 @@ async function updateWachttijden() {
         
         if (data && data.lands) {
             let planAangepast = false;
-
             data.lands.forEach(land => {
                 land.rides.forEach(ride => {
                     let apiName = ride.name.toLowerCase().trim();
@@ -185,7 +187,6 @@ async function updateWachttijden() {
                 });
             });
             ind.innerText = "● LIVE " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
             if(planAangepast && activeView === 'plan') berekenOptimalePlan(false);
         }
     } catch (e) {
@@ -247,7 +248,7 @@ function toonLijst() {
 }
 
 function setPriority(id, val) { 
-    id = parseInt(id, 10); // Beveiliging type mismatch
+    id = parseInt(id, 10); 
     prioriteiten[id] = (prioriteiten[id] === val) ? 0 : val; 
     voltooid.delete(id); 
     save(); 
@@ -258,6 +259,8 @@ function wisPrioriteiten() {
     if(confirm("Selectie wissen?")) { 
         prioriteiten = {}; 
         voltooid.clear(); 
+        // Reset ook de pauzes bij een nieuwe start
+        pauzeState = { koffie: { voltooid: false, uitgesteld: 0 }, lunch: { voltooid: false, uitgesteld: 0 }, snack: { voltooid: false, uitgesteld: 0 } };
         save(); 
         toonLijst(); 
     } 
@@ -267,7 +270,6 @@ function switchView(v) {
     activeView = v; save();
     ['attracties','plan','sprookjes'].forEach(id => document.getElementById(id+'-view').style.display = 'none');
     document.getElementById(v+'-view').style.display = 'block';
-    
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('nav-' + v).classList.add('active');
     document.getElementById('view-title').innerText = v === 'attracties' ? 'ATTRACTIES' : (v === 'plan' ? 'Jouw Dagplan' : 'Sprookjesbos');
@@ -277,7 +279,6 @@ function switchView(v) {
     window.scrollTo(0,0);
 }
 
-// GEFIXED: Forceer nummer-type + stop event propagatie
 function markAsDone(id, event) { 
     if(event) event.stopPropagation();
     voltooid.add(parseInt(id, 10)); 
@@ -288,14 +289,20 @@ function markAsDone(id, event) {
 
 function markBreakAsDone(type, event) {
     if(event) event.stopPropagation();
-    if (type === 'lunch') lunchVoltooid = true;
-    if (type === 'snack') snackVoltooid = true;
+    pauzeState[type].voltooid = true;
+    save();
+    berekenOptimalePlan(false);
+}
+
+// Functie voor de nieuwe Opschuif-knop
+function postponeBreak(type, event) {
+    if(event) event.stopPropagation();
+    pauzeState[type].uitgesteld++;
     save();
     berekenOptimalePlan(false);
 }
 
 function berekenOptimalePlan(switchAfter = true) {
-    // Hier kijkt het algoritme of voltooid.has() true is. Dat werkt nu feilloos omdat beide nummers zijn.
     let ruweLijst = attractieData.filter(a => prioriteiten[a.id] > 0 && a.status === "Open" && !voltooid.has(a.id));
     
     if (ruweLijst.length === 0 && switchAfter) return alert("Kies eerst attracties uit de lijst!");
@@ -339,33 +346,63 @@ function berekenOptimalePlan(switchAfter = true) {
         let planLijst = [];
         let huidigRijk = initieelRijk;
         let sluitingGetoond = false;
-        let localLunchGehad = lunchVoltooid;
-        let localSnackGehad = snackVoltooid;
+        
+        // Tijdelijke trackers voor de berekening-loop
+        let localGehad = {
+            koffie: pauzeState.koffie.voltooid,
+            lunch: pauzeState.lunch.voltooid,
+            snack: pauzeState.snack.voltooid
+        };
+        let tempUitgesteld = {
+            koffie: pauzeState.koffie.uitgesteld,
+            lunch: pauzeState.lunch.uitgesteld,
+            snack: pauzeState.snack.uitgesteld
+        };
 
         ruweLijst.forEach((a, index) => {
             let wandelTijd = (index === 0 && planLijst.length === 0) ? ((huidigRijk === "Ingang" || huidigRijk !== a.rijk) ? 8 : 3) : ((huidigRijk !== a.rijk) ? 8 : 3);
             let aankomst = actueleMinuten + wandelTijd;
             
-            if (aankomst > 765 && !localLunchGehad) { 
-                if (aankomst < 840) { 
+            // 1. KOFFIE Check (11:00 - 11:45 = 660 tot 705)
+            if (!localGehad.koffie && aankomst >= 660) {
+                if (tempUitgesteld.koffie > 0) {
+                    tempUitgesteld.koffie--; // Sla deze iteratie over, verminder uitstel-teller
+                } else if (aankomst <= 705 || pauzeState.koffie.uitgesteld > 0) {
+                    planLijst.push({ 
+                        isBreak: true, type: 'koffie', rijk: huidigRijk, aankomstTijd: formatTime(actueleMinuten), 
+                        duur: 20, titel: "Koffie & Gebak?", desc: "Tijd voor een ochtendpauze. Plan ca. 20 min in." 
+                    });
+                    actueleMinuten += 20; aankomst += 20;
+                    localGehad.koffie = true; 
+                }
+            }
+
+            // 2. LUNCH Check (12:45 - 13:45 = 765 tot 825)
+            if (!localGehad.lunch && aankomst >= 765) { 
+                if (tempUitgesteld.lunch > 0) {
+                    tempUitgesteld.lunch--;
+                } else if (aankomst <= 825 || pauzeState.lunch.uitgesteld > 0) { 
                     planLijst.push({ 
                         isBreak: true, type: 'lunch', rijk: huidigRijk, aankomstTijd: formatTime(actueleMinuten), 
                         duur: 40, titel: "Tijd voor lunch?", desc: "Het is tijd voor een pauze. Plan hier ca. 40 min voor in." 
                     });
                     actueleMinuten += 40; aankomst += 40;
+                    localGehad.lunch = true;
                 }
-                localLunchGehad = true; 
             } 
             
-            if (aankomst > 945 && !localSnackGehad) { 
-                if (aankomst < 1020) {
+            // 3. SNACK Check (16:30 - 17:00 = 990 tot 1020)
+            if (!localGehad.snack && aankomst >= 990) { 
+                if (tempUitgesteld.snack > 0) {
+                    tempUitgesteld.snack--;
+                } else if (aankomst <= 1020 || pauzeState.snack.uitgesteld > 0) {
                     planLijst.push({ 
                         isBreak: true, type: 'snack', rijk: huidigRijk, aankomstTijd: formatTime(actueleMinuten), 
                         duur: 25, titel: "Kleine versnapering", desc: "Pak een momentje rust en een snack. Plan ca. 25 min in." 
                     });
                     actueleMinuten += 25; aankomst += 25;
+                    localGehad.snack = true;
                 }
-                localSnackGehad = true;
             }
 
             let aankomstUur = Math.floor(aankomst / 60) % 24;
@@ -406,7 +443,10 @@ function berekenOptimalePlan(switchAfter = true) {
                 <button class="btn-horeca" onclick="openHorecaModal('${top.rijk}', '${top.type}')">
                     🍔 Horeca in de buurt bekijken
                 </button>
-                <button onclick="markBreakAsDone('${top.type}', event)" class="done-btn" style="background:var(--smart-green);">✓ Hervat Route</button>
+                <div class="break-actions">
+                    <button onclick="postponeBreak('${top.type}', event)" class="secondary-btn" style="border-color:var(--smart-green); color:var(--smart-green);">⏭️ Later</button>
+                    <button onclick="markBreakAsDone('${top.type}', event)" class="done-btn" style="background:var(--smart-green);">✓ Genoten</button>
+                </div>
             </div>`;
         } else {
             let wHtml = top.id === 9 ? `<div style="font-size:22px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">Geniet van het groen</div>` : `<div style="font-size:28px; color:var(--efteling-gold); font-weight:900; margin: 10px 0;">${top.geplandeWacht} MIN</div>`;
@@ -432,12 +472,15 @@ function berekenOptimalePlan(switchAfter = true) {
         planLijst.slice(1).forEach((item) => {
             if (item.isBreak) {
                 routeHtml += `
-                <div class="smart-break-card" onclick="openHorecaModal('${item.rijk}', '${item.type}')">
-                    <img src="icon-pauze.png" class="smart-break-icon" alt="Pauze">
-                    <div class="smart-break-text">
-                        <h4>${item.titel}</h4>
-                        <p>${item.desc} Tik voor locaties.</p>
+                <div class="smart-break-card">
+                    <div class="smart-break-content" onclick="openHorecaModal('${item.rijk}', '${item.type}')">
+                        <img src="icon-pauze.png" class="smart-break-icon" alt="Pauze">
+                        <div class="smart-break-text">
+                            <h4>${item.titel}</h4>
+                            <p>${item.desc} Tik voor locaties.</p>
+                        </div>
                     </div>
+                    <button class="postpone-icon-btn" onclick="postponeBreak('${item.type}', event)" aria-label="Opschuiven">⏭️</button>
                 </div>`;
             } else {
                 if (item.toonSluiting) {
@@ -539,7 +582,7 @@ function closeAttractieModal(e) {
 
 function openHorecaModal(rijk, type) {
     let opties = horecaData[rijk] || horecaData["Marerijk"];
-    let titel = type === 'lunch' ? 'Tijd voor Lunch' : 'Tijd voor een Snack';
+    let titel = type === 'lunch' ? 'Tijd voor Lunch' : (type === 'koffie' ? 'Koffie & Gebak' : 'Tijd voor een Snack');
     document.getElementById('horeca-modal-title').innerText = titel;
     document.getElementById('horeca-modal-desc').innerText = `Hier kun je nu terecht in het ${rijk}:`;
     
