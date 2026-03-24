@@ -16,6 +16,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="toast-container">
+        <span style="font-size: 18px;">⚠️</span>
+        <span id="toast-message">Melding tekst hier...</span>
+    </div>
+
     <div id="splash-screen">
         <div class="splash-logo-wrapper">
             <img src="splash-logo.png" class="splash-logo-bg" alt="Efteling Logo">
@@ -106,6 +111,18 @@
                     <p id="attractie-modal-fact" style="margin: 5px 0 0 0;"></p>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="horeca-modal" class="modal" onclick="closeHorecaModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 style="margin: 0; color: var(--efteling-blue);" id="horeca-modal-title">In de buurt</h3>
+                <button onclick="closeHorecaModal()" class="close-btn">×</button>
+            </div>
+            <p style="font-size: 13px; color: #666; margin-top: 0;" id="horeca-modal-desc">Hier kun je terecht op je huidige locatie.</p>
+            <div id="horeca-modal-list" style="max-height: 50vh; overflow-y: auto; margin-bottom: 10px;"></div>
+            <button onclick="closeHorecaModal()" class="secondary-btn" style="width: 100%; border: none; background: #f0f0f0; color: #333;">Sluiten</button>
         </div>
     </div>
 
