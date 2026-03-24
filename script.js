@@ -59,13 +59,6 @@ const horecaData = {
     "Ingang": [{naam: "De Gebrande Boon", desc: "Verse koffie en ovenheerlijke broodjes om de dag te starten."}]
 };
 
-// State voor de nieuwe Pauze Opschuif functionaliteit
-let pauzeState = JSON.parse(localStorage.getItem('eftelingPauzes')) || {
-    koffie: { voltooid: false, uitgesteld: 0 },
-    lunch:  { voltooid: false, uitgesteld: 0 },
-    snack:  { voltooid: false, uitgesteld: 0 }
-};
-
 let prioriteiten = JSON.parse(localStorage.getItem('eftelingPrio')) || {};
 let voltooidArray = JSON.parse(localStorage.getItem('eftelingVoltooid')) || [];
 let voltooid = new Set(voltooidArray.map(id => parseInt(id, 10)));
@@ -73,6 +66,21 @@ let activeView = localStorage.getItem('eftelingView') || 'attracties';
 let selectedSprookjes = JSON.parse(localStorage.getItem('eftelingSprookjes')) || ["sp1", "sp2", "sp3", "sp4", "sp5", "sp11", "sp18"];
 let activeCategory = 'alle';
 let vorigeStatussen = {}; 
+
+// Nieuwe Pauze State (voltooid & offset logic)
+let pauzeState = JSON.parse(localStorage.getItem('eftelingPauzes')) || {
+    koffie: { voltooid: false, offset: 0 },
+    lunch:  { voltooid: false, offset: 0 },
+    snack:  { voltooid: false, offset: 0 }
+};
+
+// Opschonen van oude pauzeState (indien nodig)
+['koffie', 'lunch', 'snack'].forEach(type => {
+    if (pauzeState[type].uitgesteld !== undefined) {
+        pauzeState[type].offset = pauzeState[type].uitgesteld;
+        delete pauzeState[type].uitgesteld;
+    }
+});
 
 function save() {
     localStorage.setItem('eftelingPrio', JSON.stringify(prioriteiten));
@@ -259,8 +267,7 @@ function wisPrioriteiten() {
     if(confirm("Selectie wissen?")) { 
         prioriteiten = {}; 
         voltooid.clear(); 
-        // Reset ook de pauzes bij een nieuwe start
-        pauzeState = { koffie: { voltooid: false, uitgesteld: 0 }, lunch: { voltooid: false, uitgesteld: 0 }, snack: { voltooid: false, uitgesteld: 0 } };
+        pauzeState = { koffie: { voltooid: false, offset: 0 }, lunch: { voltooid: false, offset: 0 }, snack: { voltooid: false, offset: 0 } };
         save(); 
         toonLijst(); 
     } 
@@ -294,10 +301,10 @@ function markBreakAsDone(type, event) {
     berekenOptimalePlan(false);
 }
 
-// Functie voor de nieuwe Opschuif-knop
-function postponeBreak(type, event) {
-    if(event) event.stopPropagation();
-    pauzeState[type].uitgesteld++;
+// Opschuif functie: 1 = Omlaag (Later), -1 = Omhoog (Eerder)
+function shiftBreak(type, direction, event) {
+    if (event) event.stopPropagation();
+    pauzeState[type].offset += direction;
     save();
     berekenOptimalePlan(false);
 }
@@ -310,7 +317,6 @@ function berekenOptimalePlan(switchAfter = true) {
     if (ruweLijst.length > 0) {
         let nu = new Date();
         let actueleMinuten = nu.getHours() * 60 + nu.getMinutes();
-        let startUur = nu.getHours();
         
         let sluitingUur = bepaalSluitingsTijd();
         const sluitingMinuten = sluitingUur * 60; 
@@ -318,9 +324,10 @@ function berekenOptimalePlan(switchAfter = true) {
         let lastVoltooidId = Array.from(voltooid).pop();
         let initieelRijk = lastVoltooidId ? attractieData.find(a => a.id === lastVoltooidId)?.rijk : "Ingang";
 
+        // --- STAP 1: Basis scores berekenen en sorteren ---
         ruweLijst.forEach(a => {
             let score = prioriteiten[a.id] * 20; 
-            let verwacht = getVerwachteWachtVoorTijd(a, startUur);
+            let verwacht = getVerwachteWachtVoorTijd(a, nu.getHours());
             let wachtVerschil = verwacht - a.wait; 
             score += (wachtVerschil * 1.5); 
             score -= (a.wait * 0.5); 
@@ -343,94 +350,98 @@ function berekenOptimalePlan(switchAfter = true) {
 
         ruweLijst.sort((a,b) => b.smartScore - a.smartScore);
         
-        let planLijst = [];
-        let huidigRijk = initieelRijk;
-        let sluitingGetoond = false;
+        // --- STAP 2: Het 2-Pass Algoritme (Genereren, dan Verschuiven, dan Berekenen) ---
+        let sequence = [];
+        let tempTijd = actueleMinuten;
         
-        // Tijdelijke trackers voor de berekening-loop
         let localGehad = {
             koffie: pauzeState.koffie.voltooid,
             lunch: pauzeState.lunch.voltooid,
             snack: pauzeState.snack.voltooid
         };
-        let tempUitgesteld = {
-            koffie: pauzeState.koffie.uitgesteld,
-            lunch: pauzeState.lunch.uitgesteld,
-            snack: pauzeState.snack.uitgesteld
-        };
 
-        ruweLijst.forEach((a, index) => {
-            let wandelTijd = (index === 0 && planLijst.length === 0) ? ((huidigRijk === "Ingang" || huidigRijk !== a.rijk) ? 8 : 3) : ((huidigRijk !== a.rijk) ? 8 : 3);
-            let aankomst = actueleMinuten + wandelTijd;
-            
-            // 1. KOFFIE Check (11:00 - 11:45 = 660 tot 705)
-            if (!localGehad.koffie && aankomst >= 660) {
-                if (tempUitgesteld.koffie > 0) {
-                    tempUitgesteld.koffie--; // Sla deze iteratie over, verminder uitstel-teller
-                } else if (aankomst <= 705 || pauzeState.koffie.uitgesteld > 0) {
-                    planLijst.push({ 
-                        isBreak: true, type: 'koffie', rijk: huidigRijk, aankomstTijd: formatTime(actueleMinuten), 
-                        duur: 20, titel: "Koffie & Gebak?", desc: "Tijd voor een ochtendpauze. Plan ca. 20 min in." 
-                    });
-                    actueleMinuten += 20; aankomst += 20;
-                    localGehad.koffie = true; 
-                }
+        // Pass 2A: Natuurlijke tijdlijn opzetten
+        ruweLijst.forEach((a, idx) => {
+            // Gesimplificeerde wandel-inschatting voor de eerste pass
+            let wandelTijd = (idx === 0) ? ((initieelRijk === "Ingang" || initieelRijk !== a.rijk) ? 8 : 3) : 3; 
+            tempTijd += wandelTijd;
+
+            // Koffie (11:00 - 11:45)
+            if (!localGehad.koffie && tempTijd >= 660 && actueleMinuten < 720) {
+                sequence.push({ isBreak: true, type: 'koffie', duur: 20, titel: "Koffie & Gebak", desc: "Tijd voor een ochtendpauze." });
+                tempTijd += 20;
+                localGehad.koffie = true;
+            }
+            // Lunch (12:45 - 13:45)
+            if (!localGehad.lunch && tempTijd >= 765 && actueleMinuten < 870) {
+                sequence.push({ isBreak: true, type: 'lunch', duur: 40, titel: "Tijd voor lunch?", desc: "Plan hier ca. 40 min voor in." });
+                tempTijd += 40;
+                localGehad.lunch = true;
+            }
+            // Snack (16:30 - 17:00)
+            if (!localGehad.snack && tempTijd >= 990 && actueleMinuten < 1050) {
+                sequence.push({ isBreak: true, type: 'snack', duur: 25, titel: "Kleine versnapering", desc: "Plan hier ca. 25 min voor in." });
+                tempTijd += 25;
+                localGehad.snack = true;
             }
 
-            // 2. LUNCH Check (12:45 - 13:45 = 765 tot 825)
-            if (!localGehad.lunch && aankomst >= 765) { 
-                if (tempUitgesteld.lunch > 0) {
-                    tempUitgesteld.lunch--;
-                } else if (aankomst <= 825 || pauzeState.lunch.uitgesteld > 0) { 
-                    planLijst.push({ 
-                        isBreak: true, type: 'lunch', rijk: huidigRijk, aankomstTijd: formatTime(actueleMinuten), 
-                        duur: 40, titel: "Tijd voor lunch?", desc: "Het is tijd voor een pauze. Plan hier ca. 40 min voor in." 
-                    });
-                    actueleMinuten += 40; aankomst += 40;
-                    localGehad.lunch = true;
-                }
-            } 
-            
-            // 3. SNACK Check (16:30 - 17:00 = 990 tot 1020)
-            if (!localGehad.snack && aankomst >= 990) { 
-                if (tempUitgesteld.snack > 0) {
-                    tempUitgesteld.snack--;
-                } else if (aankomst <= 1020 || pauzeState.snack.uitgesteld > 0) {
-                    planLijst.push({ 
-                        isBreak: true, type: 'snack', rijk: huidigRijk, aankomstTijd: formatTime(actueleMinuten), 
-                        duur: 25, titel: "Kleine versnapering", desc: "Pak een momentje rust en een snack. Plan ca. 25 min in." 
-                    });
-                    actueleMinuten += 25; aankomst += 25;
-                    localGehad.snack = true;
-                }
-            }
-
-            let aankomstUur = Math.floor(aankomst / 60) % 24;
-            let isNuDoen = planLijst.length === 0;
-            let geprojecteerdeWacht = isNuDoen ? a.wait : Math.round(getVerwachteWachtVoorTijd(a, aankomstUur) / 5) * 5;
-
-            let ritDuur = parseInt(a.duur) || 5;
-            let klaar = aankomst + geprojecteerdeWacht + ritDuur;
-
-            a.aankomstTijd = formatTime(aankomst);
-            a.teLaat = aankomst >= sluitingMinuten;
-            if (a.teLaat && !sluitingGetoond) {
-                a.toonSluiting = true;
-                sluitingGetoond = true;
-            } else {
-                a.toonSluiting = false;
-            }
-
-            a.geplandeWacht = geprojecteerdeWacht;
-            a.isBreak = false;
-            a.wandelTijdStr = `ca. ${wandelTijd} min lopen`;
-
-            planLijst.push(a);
-
-            actueleMinuten = klaar;
-            huidigRijk = a.rijk;
+            sequence.push(a);
+            tempTijd += a.wait + (parseInt(a.duur) || 5);
         });
 
+        // Pass 2B: Handmatige offsets toepassen (opschuiven omhoog/omlaag)
+        ['koffie', 'lunch', 'snack'].forEach(type => {
+            if (!pauzeState[type].voltooid && pauzeState[type].offset !== 0) {
+                let currentIndex = sequence.findIndex(item => item.isBreak && item.type === type);
+                if (currentIndex !== -1) {
+                    let breakItem = sequence.splice(currentIndex, 1)[0];
+                    let newIndex = currentIndex + pauzeState[type].offset;
+                    // Blijf binnen de grenzen van de lijst
+                    if (newIndex < 0) newIndex = 0;
+                    if (newIndex > sequence.length) newIndex = sequence.length;
+                    sequence.splice(newIndex, 0, breakItem);
+                }
+            }
+        });
+
+        // Pass 2C: Definitieve tijden berekenen voor de uiteindelijke HTML
+        let planLijst = [];
+        let rekenTijd = actueleMinuten;
+        let huidigRijk = initieelRijk;
+        let sluitingGetoond = false;
+
+        sequence.forEach((item, index) => {
+            if (item.isBreak) {
+                item.rijk = huidigRijk;
+                item.aankomstTijd = formatTime(rekenTijd);
+                rekenTijd += item.duur;
+                planLijst.push(item);
+            } else {
+                let wandelTijd = (index === 0) ? ((huidigRijk === "Ingang" || huidigRijk !== item.rijk) ? 8 : 3) : ((huidigRijk !== item.rijk) ? 8 : 3);
+                rekenTijd += wandelTijd;
+                
+                item.wandelTijdStr = `ca. ${wandelTijd} min lopen`;
+                item.aankomstTijd = formatTime(rekenTijd);
+                item.teLaat = rekenTijd >= sluitingMinuten;
+                
+                if (item.teLaat && !sluitingGetoond) {
+                    item.toonSluiting = true;
+                    sluitingGetoond = true;
+                } else {
+                    item.toonSluiting = false;
+                }
+
+                let aankomstUur = Math.floor(rekenTijd / 60) % 24;
+                let isNuDoen = planLijst.length === 0;
+                item.geplandeWacht = isNuDoen ? item.wait : Math.round(getVerwachteWachtVoorTijd(item, aankomstUur) / 5) * 5;
+
+                rekenTijd += item.geplandeWacht + (parseInt(item.duur) || 5);
+                huidigRijk = item.rijk;
+                planLijst.push(item);
+            }
+        });
+
+        // --- STAP 3: HTML Genereren ---
         const top = planLijst[0];
         let topHtml = "";
         
@@ -444,7 +455,9 @@ function berekenOptimalePlan(switchAfter = true) {
                     🍔 Horeca in de buurt bekijken
                 </button>
                 <div class="break-actions">
-                    <button onclick="postponeBreak('${top.type}', event)" class="secondary-btn" style="border-color:var(--smart-green); color:var(--smart-green);">⏭️ Later</button>
+                    <button onclick="shiftBreak('${top.type}', 1, event)" class="secondary-btn btn-icon-text" style="border-color:var(--smart-green); color:var(--smart-green);">
+                        <img src="icon-omlaag.png" class="btn-icon" style="filter:none;" alt="Omlaag"> Later
+                    </button>
                     <button onclick="markBreakAsDone('${top.type}', event)" class="done-btn" style="background:var(--smart-green);">✓ Genoten</button>
                 </div>
             </div>`;
@@ -477,10 +490,13 @@ function berekenOptimalePlan(switchAfter = true) {
                         <img src="icon-pauze.png" class="smart-break-icon" alt="Pauze">
                         <div class="smart-break-text">
                             <h4>${item.titel}</h4>
-                            <p>${item.desc} Tik voor locaties.</p>
+                            <p>${item.desc}</p>
                         </div>
                     </div>
-                    <button class="postpone-icon-btn" onclick="postponeBreak('${item.type}', event)" aria-label="Opschuiven">⏭️</button>
+                    <div class="break-shift-controls">
+                        <button class="shift-btn" onclick="shiftBreak('${item.type}', -1, event)" aria-label="Eerder"><img src="icon-omhoog.png" class="shift-icon" alt="Omhoog"></button>
+                        <button class="shift-btn" onclick="shiftBreak('${item.type}', 1, event)" aria-label="Later"><img src="icon-omlaag.png" class="shift-icon" alt="Omlaag"></button>
+                    </div>
                 </div>`;
             } else {
                 if (item.toonSluiting) {
